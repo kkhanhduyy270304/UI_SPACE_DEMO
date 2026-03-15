@@ -1,0 +1,101 @@
+StoreLens Frontend Blueprint for AI Copilot
+1. Project Identity & Context
+You are an expert Frontend Developer building StoreLens - a real-time retail analytics dashboard.
+
+Goal: Visualize customer behavior data processed by Edge AI.
+
+Key Features: Real-time KPIs, Heatmaps, Dwell-time charts, Zone configuration.
+
+Design System: Modern, Dark-themed (optional), Glassmorphism, Responsive.
+
+2. Technical Stack (Strict Adherence)
+Framework: React 18+ (Vite)
+
+Language: TypeScript
+
+Styling: Tailwind CSS
+
+Icons: Lucide React
+
+Charts: Recharts
+
+State Management: Redux Toolkit (Thunks for Async)
+
+Animations: Framer Motion
+
+API Client: Axios
+
+3. Database Schema Knowledge (Source of Truth)
+When generating mock data or types, strictly follow these schemas from the backend:
+
+A. StoreSummary (storesSummary.model.js)
+storeId: ObjectId
+
+total_people_count: Number
+
+total_revenue: Number
+
+avg_dwell_time: Number
+
+conversion_rate: Number (total_invoices / total_people_count)
+
+B. ZoneStats (zonesSummary.model.js)
+zone_id: ObjectId
+
+people_count: Number
+
+performance.conversion_rate: Number
+
+performance.avg_dwell_time: Number
+
+performance.total_stop_events: Number
+
+trend: "up" | "down" | "steady"
+
+C. Heatmap (heatmap.model.js)
+camera_id: ObjectId
+
+data_points: Array of { x: number, y: number, intensity: number }
+
+4. UI/UX "Vibe" Guidelines
+Containers: Use bg-white/10 backdrop-blur-md border border-white/20 for a glassmorphism look.
+
+Colors:
+
+Primary: Indigo/Violet for tech vibe.
+
+Success: Emerald for positive trends.
+
+Danger: Rose for drops in traffic.
+
+Charts: Use ResponsiveContainer from Recharts. Keep colors consistent (e.g., Traffic is always Blue, Revenue is always Green).
+
+5. Development Instructions for Copilot
+Component Creation Rule:
+Always use Functional Components with TypeScript Interfaces.
+
+Keep logic (hooks) separate from presentation where possible.
+
+Use clsx or tailwind-merge for dynamic classes.
+
+Mocking Logic:
+When asked to /mock, create realistic data that mimics a real store (e.g., peak traffic at 18:00, higher dwell time in "Clothing" zone compared to "Entrance").
+
+State Management:
+Use useSelector and useDispatch from react-redux.
+
+Slices should be organized by feature: dashboardSlice, zoneSlice, authSlice.
+
+6. Project Structure Mapping
+Plaintext
+src/
+ ├── assets/          # Static assets (logo, images)
+ ├── components/      # Atomic UI components (Buttons, Cards, Modals)
+ ├── features/        # Business logic & Page-level components
+ │    ├── Dashboard/  # KPI cards, Global charts
+ │    ├── Heatmap/    # Canvas-based density mapping
+ │    └── Analytics/  # Dwell time & Zone comparison
+ ├── redux/           # Store config & Slices
+ ├── services/        # Axios instance & API calls
+ ├── styles/          # Tailwind & Global CSS
+ └── utils/           # Formatters (currency, time, stop_watch)
