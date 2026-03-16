@@ -9,6 +9,7 @@ import { RuleConfiguration } from '../features/RuleConfiguration';
 import { ZoneManager } from '../features/ZoneManager';
 import { CameraManager } from '../features/CameraManager';
 import { ManagerUsers } from '../features/ManagerUsers';
+import { Settings } from '../features/Settings';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { hydrateSession } from '../redux/slices/authSlice';
 import { getStoredSession } from '../services/api/authApi';
@@ -57,7 +58,7 @@ export const AppRouter = () => {
           <Route path="/management/products" element={<div className="text-slate-900">Quản lý sản phẩm</div>} />
           <Route path="/management/rules" element={<RuleConfiguration />} />
 
-          <Route path="/settings" element={<div className="text-slate-900">Trang cài đặt</div>} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/privacy" element={<div className="text-slate-900">Chính sách bảo mật</div>} />
           <Route path="/docs" element={<div className="text-slate-900">Tài liệu hướng dẫn</div>} />
         </Route>
