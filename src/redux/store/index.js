@@ -4,13 +4,17 @@ import dashboardReducer from '../slices/dashboardSlice';
 import heatmapReducer from '../slices/heatmapSlice';
 import settingsReducer from '../slices/settingsSlice';
 import zoneReducer from '../slices/zoneSlice';
+import zoneAnalyticsReducer from '../slices/zoneAnalyticsSlice';
+import customerReducer from '../slices/customerSlice';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     dashboard: dashboardReducer,
     heatmap: heatmapReducer,
     settings: settingsReducer,
-    zone: zoneReducer
+    zone: zoneReducer,
+    zoneAnalytics: zoneAnalyticsReducer,
+    customer: customerReducer
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware({
     serializableCheck: false

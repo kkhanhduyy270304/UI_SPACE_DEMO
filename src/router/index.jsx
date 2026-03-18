@@ -4,9 +4,10 @@ import { MainLayout } from '../components/layout';
 import { SignIn } from '../features/Auth';
 import { Dashboard } from '../features/Dashboard';
 import { Heatmap } from '../features/Heatmap';
-import { Analytics } from '../features/Analytics';
+import { Analytics, DwellTimeAnalysis, CustomerAnalysis, ZoneAnalysis } from '../features/Analytics';
 import { RuleConfiguration } from '../features/RuleConfiguration';
 import { ZoneManager } from '../features/ZoneManager';
+import { CustomerManagement } from '../features/CustomerManagement';
 import { CameraManager } from '../features/CameraManager';
 import { ManagerUsers } from '../features/ManagerUsers';
 import { Settings } from '../features/Settings';
@@ -51,10 +52,13 @@ export const AppRouter = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/analytics/dwell-time" element={<DwellTimeAnalysis />} />
+          <Route path="/analytics/zone" element={<ZoneAnalysis />} />
 
           <Route path="/management/cameras" element={<CameraManager />} />
           <Route path="/management/zones" element={<ZoneManager />} />
           <Route path="/management/users" element={<ManagerUsers />} />
+          <Route path="/management/customers" element={<CustomerManagement />} />
           <Route path="/management/products" element={<div className="text-slate-900">Quản lý sản phẩm</div>} />
           <Route path="/management/rules" element={<RuleConfiguration />} />
 
