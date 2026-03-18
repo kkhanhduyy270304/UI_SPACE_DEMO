@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { LayoutDashboard, Flame, BarChart3, Settings, Camera, SlidersHorizontal, Menu, X, User, LogOut, ChevronDown, Package, MapPin, Store, Users } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { signOut } from '../../redux/slices/authSlice';
@@ -18,6 +18,7 @@ export const Header = () => {
   } = useAppSelector(state => state.auth);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isManagementOpen, setIsManagementOpen] = useState(false);
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState('Cửa hàng 1 - Trung tâm');
@@ -43,14 +44,29 @@ export const Header = () => {
     label: 'Bản đồ nhiệt',
     path: '/heatmap',
     icon: <Flame size={20} />
+  }];
+
+  // Analytics dropdown items
+  const analyticsItems = [{
+    label: 'Phân tích thời gian dừng',
+    path: '/analytics/dwell-time',
+    icon: <BarChart3 size={18} />
   }, {
-    label: 'Phân tích',
-    path: '/analytics',
-    icon: <BarChart3 size={20} />
+    label: 'Phân tích khách hàng',
+    path: '/analytics/customer',
+    icon: <Users size={18} />
+  }, {
+    label: 'Phân tích khu vực',
+    path: '/analytics/zone',
+    icon: <MapPin size={18} />
   }];
 
   // Management dropdown items
   const managementItems = [{
+    label: 'Phân tích khu vực',
+    path: '/zone-analytics',
+    icon: <MapPin size={18} />
+  }, {
     label: 'Cấu hình camera',
     path: '/management/cameras',
     icon: <Camera size={18} />
@@ -61,6 +77,10 @@ export const Header = () => {
   }, {
     label: 'Người dùng',
     path: '/management/users',
+    icon: <Users size={18} />
+  }, {
+    label: 'Quản lý khách hàng',
+    path: '/management/customers',
     icon: <Users size={18} />
   }, {
     label: 'Quản lý sản phẩm',
@@ -103,6 +123,33 @@ export const Header = () => {
                 {item.icon}
                 <span className="font-medium">{item.label}</span>
               </Link>)}
+
+            {/* Analytics Dropdown */}
+            <div className="relative">
+              <button onClick={() => setIsAnalyticsOpen(!isAnalyticsOpen)} className="flex items-center space-x-2 px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                <BarChart3 size={20} />
+                <span className="font-medium">Phân tích</span>
+                <ChevronDown size={16} className={`transition-transform ${isAnalyticsOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isAnalyticsOpen && <motion.div initial={{
+                opacity: 0,
+                y: -10
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} exit={{
+                opacity: 0,
+                y: -10
+              }} className="absolute top-full mt-2 right-0 w-56 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
+                    {analyticsItems.map(item => <Link key={item.path} to={item.path} onClick={() => setIsAnalyticsOpen(false)} className="flex items-center space-x-3 px-4 py-3 text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>)}
+                  </motion.div>}
+              </AnimatePresence>
+            </div>
 
             {/* Management Dropdown */}
             <div className="relative">
@@ -229,6 +276,25 @@ export const Header = () => {
                   {item.icon}
                   <span className="font-medium">{item.label}</span>
                 </Link>)}
+
+              {/* Mobile Analytics Dropdown */}
+              <div className="pt-2 border-t border-slate-200">
+                <button onClick={() => setIsAnalyticsOpen(!isAnalyticsOpen)} className="w-full flex items-center justify-between px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+                  <div className="flex items-center space-x-3">
+                    <BarChart3 size={18} />
+                    <span className="font-medium">Phân tích</span>
+                  </div>
+                  <ChevronDown size={16} className={`transition-transform ${isAnalyticsOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isAnalyticsOpen && (
+                  <div className="mt-2 space-y-1">
+                    {analyticsItems.map(item => <Link key={item.path} to={item.path} onClick={() => { setIsMobileMenuOpen(false); setIsAnalyticsOpen(false); }} className="flex items-center space-x-3 px-8 py-2 rounded-lg text-slate-600 hover:bg-blue-50 transition-all">
+                        {item.icon}
+                        <span className="text-sm">{item.label}</span>
+                      </Link>)}
+                  </div>
+                )}
+              </div>
 
               {/* Mobile Management Items */}
               <div className="pt-2 border-t border-slate-200">

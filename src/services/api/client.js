@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { generateMockStoreSummary, generateMockHourlyData } from '../../utils/mockData';
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -9,8 +10,26 @@ const apiClient = axios.create({
   }
 });
 
-// Request interceptor
+// Mock interceptor for demo
 apiClient.interceptors.request.use(config => {
+  // Mock dashboard summary
+  if (config.url === '/dashboard/summary') {
+    // Simulate API delay
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          ...config,
+          mockResponse: {
+            data: {
+              summary: generateMockStoreSummary(),
+              hourlyData: generateMockHourlyData()
+            }
+          }
+        });
+      }, 500);
+    });
+  }
+
   // Add auth token if available
   const token = localStorage.getItem('authToken');
   if (token) {
@@ -21,8 +40,13 @@ apiClient.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
-// Response interceptor
-apiClient.interceptors.response.use(response => response, error => {
+// Mock response interceptor
+apiClient.interceptors.response.use(response => {
+  if (response.mockResponse) {
+    return response.mockResponse;
+  }
+  return response;
+}, error => {
   if (error.response?.status === 401) {
     // Handle unauthorized access
     localStorage.removeItem('authToken');
@@ -30,4 +54,5 @@ apiClient.interceptors.response.use(response => response, error => {
   }
   return Promise.reject(error);
 });
+
 export default apiClient;

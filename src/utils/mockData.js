@@ -4,17 +4,31 @@
 export const generateMockStoreSummary = () => {
   const totalPeople = Math.floor(Math.random() * 500 + 200); // 200-700 people
   const totalInvoices = Math.floor(totalPeople * (Math.random() * 0.3 + 0.15)); // 15-45% conversion
+  const liveOccupancy = Math.floor(Math.random() * 100 + 50); // 50-150 current people
 
   return {
     storeId: 'store-001',
-    total_people_count: totalPeople,
-    total_revenue: Math.floor(Math.random() * 50000000 + 20000000),
-    // 20M-70M VND
-    avg_dwell_time: Math.floor(Math.random() * 300 + 180),
-    // 3-8 minutes
+    daily_visitors: totalPeople,
+    live_occupancy: liveOccupancy,
     conversion_rate: parseFloat((totalInvoices / totalPeople * 100).toFixed(2)),
     date: new Date().toISOString()
   };
+};
+
+/**
+ * Generate mock hourly traffic data
+ */
+export const generateMockHourlyData = () => {
+  const hours = [];
+  for (let hour = 8; hour <= 22; hour++) {
+    const baseTraffic = hour < 12 ? 20 + (hour - 8) * 10 : hour > 18 ? 80 - (hour - 18) * 15 : 80;
+    const traffic = Math.floor(baseTraffic + Math.random() * 40 - 20);
+    hours.push({
+      hour: `${hour}:00`,
+      visitors: Math.max(0, traffic)
+    });
+  }
+  return hours;
 };
 
 /**
