@@ -83,7 +83,7 @@ export const Header = () => {
     path: '/management/customers',
     icon: <Users size={18} />
   }, {
-    label: 'Quản lý sản phẩm',
+    label: 'Quản lý tài sản',
     path: '/management/products',
     icon: <Package size={18} />
   }, {
