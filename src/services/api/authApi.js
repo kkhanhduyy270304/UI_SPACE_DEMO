@@ -15,6 +15,36 @@ const seedUsers = [{
   role: 'manager',
   storeId: 'STORE001'
 }];
+
+const emailAliases = {
+  'admin@storelens.vn': 'admin@spacelens.vn',
+  'manager@storelens.vn': 'manager@spacelens.vn'
+};
+
+const normalizeEmail = (email = '') => {
+  const normalized = email.trim().toLowerCase();
+  return emailAliases[normalized] || normalized;
+};
+
+const migrateLegacyUsers = users => {
+  let changed = false;
+  const migrated = users.map(user => {
+    const nextEmail = normalizeEmail(user.email);
+    if (nextEmail !== user.email) {
+      changed = true;
+      return {
+        ...user,
+        email: nextEmail
+      };
+    }
+    return user;
+  });
+  if (changed) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(migrated));
+  }
+  return migrated;
+};
+
 const delay = (ms = 250) => new Promise(resolve => setTimeout(resolve, ms));
 const ensureUsers = () => {
   const raw = localStorage.getItem(USERS_KEY);
@@ -28,7 +58,7 @@ const ensureUsers = () => {
       localStorage.setItem(USERS_KEY, JSON.stringify(seedUsers));
       return seedUsers;
     }
-    return parsed;
+    return migrateLegacyUsers(parsed);
   } catch {
     localStorage.setItem(USERS_KEY, JSON.stringify(seedUsers));
     return seedUsers;
@@ -59,7 +89,8 @@ export const getStoredSession = () => {
 export const loginUser = async payload => {
   await delay();
   const users = ensureUsers();
-  const found = users.find(user => user.email.toLowerCase() === payload.email.trim().toLowerCase() && user.password === payload.password);
+  const normalizedInputEmail = normalizeEmail(payload.email);
+  const found = users.find(user => normalizeEmail(user.email) === normalizedInputEmail && user.password === payload.password);
   if (!found) {
     throw new Error('Email hoac mat khau khong dung');
   }
@@ -86,14 +117,15 @@ export const addUser = async (payload, actor) => {
     throw new Error('Chi admin moi co quyen tao tai khoan');
   }
   const users = ensureUsers();
-  const duplicated = users.some(user => user.email.toLowerCase() === payload.email.trim().toLowerCase());
+  const normalizedInputEmail = normalizeEmail(payload.email);
+  const duplicated = users.some(user => normalizeEmail(user.email) === normalizedInputEmail);
   if (duplicated) {
     throw new Error('Email da ton tai');
   }
   const created = {
     id: `user-${Date.now()}`,
     fullName: payload.fullName.trim(),
-    email: payload.email.trim().toLowerCase(),
+    email: normalizedInputEmail,
     password: payload.password,
     role: payload.role,
     storeId: payload.storeId
