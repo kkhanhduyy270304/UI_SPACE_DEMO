@@ -1,4 +1,4 @@
-1. Functional Overview
+﻿1. Functional Overview
 The Camera Management page is the administrative hub for handling all hardware inputs (IP Cameras).
 
 Goal: List, add, edit, and monitor the connection status of RTSP streams.
@@ -34,7 +34,7 @@ Actions: Edit (Pen icon), Delete (Trash icon), and Preview (Play icon to test th
 The Add/Edit Modal
 Form Fields: name, rtsp_url, store_id (Dropdown), description.
 
-Style: bg-slate-900/90 border border-white/20 shadow-2xl rounded-xl.
+Style: bg-white/90 border border-slate-200 shadow-2xl rounded-xl.
 
 Button: Use the "Save Configuration" style with linear-gradient(135deg, #6366f1, #4f46e5).
 
@@ -54,7 +54,7 @@ Implementation Prompt:
 
 Use the StatCard components for the top metrics.
 
-Implement a responsive table for the camera list with a 'Glassmorphism' feel: bg-white/5 border border-white/10 rounded-lg.
+Implement a responsive table for the camera list with a 'Glassmorphism' feel: bg-white/5 border border-slate-200 rounded-lg.
 
 Map the 'Status' column to the status field in camera.model.js.
 

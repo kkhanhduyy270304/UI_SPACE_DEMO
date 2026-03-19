@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { loadDashboardData } from '../../redux/slices/dashboardSlice';
-import { Card } from '../../components/common';
+import { StandardChartCard } from '../../components/common';
 import { formatNumber, formatPercentage } from '../../utils/formatters';
 import { Users, DollarSign, TrendingUp, Activity, BarChart3 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
@@ -25,10 +25,28 @@ export const Dashboard = () => {
     dispatch(loadDashboardData({ locationId, cameraId, date }));
   }, [dispatch, locationId, cameraId, date]);
 
+  useEffect(() => {
+    const realtimeInterval = setInterval(() => {
+      dispatch(loadDashboardData({ locationId, cameraId, date }));
+    }, 30000);
+
+    return () => clearInterval(realtimeInterval);
+  }, [dispatch, locationId, cameraId, date]);
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <p className="text-gray-600 text-xl">Đang tải dữ liệu...</p>
+      <div className="min-h-screen bg-white p-6">
+        <div className="mx-auto w-full max-w-[1760px] space-y-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            {[1, 2, 3, 4].map(item => (
+              <div key={item} className="h-28 animate-pulse rounded-2xl border border-slate-200 bg-slate-100" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="h-[300px] animate-pulse rounded-2xl border border-slate-200 bg-slate-100" />
+            <div className="h-[300px] animate-pulse rounded-2xl border border-slate-200 bg-slate-100" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -42,7 +60,7 @@ export const Dashboard = () => {
   }
 
   // ============================================================================
-  // STEP 0: Dashboard Container Setup (Dark Theme - bg-slate-950)
+  // STEP 0: Dashboard container setup
   // ============================================================================
   return (
     <div className="min-h-screen bg-white">
@@ -148,8 +166,7 @@ export const Dashboard = () => {
             ====================================================================== */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* 2.1: Hourly Visitor Traffic Chart (Left) */}
-          <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
-            <h2 className="text-gray-900 text-lg font-semibold mb-4">Lưu Lượng Khách Theo Giờ</h2>
+          <StandardChartCard title="Lưu Lượng Khách Theo Giờ" data={hourlyData} fileName="hourly-traffic">
             <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={hourlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -177,11 +194,10 @@ export const Dashboard = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </StandardChartCard>
 
           {/* 2.2: Daily Revenue Chart (Right) */}
-          <div className="rounded-2xl bg-slate-800 border border-slate-700 p-6">
-            <h2 className="text-white text-lg font-semibold mb-4">Doanh Thu Theo Ngày (7 Ngày Gần Đây)</h2>
+          <StandardChartCard title="Doanh Thu Theo Ngày (7 Ngày Gần Đây)" data={revenueData} fileName="daily-revenue">
             <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -202,7 +218,7 @@ export const Dashboard = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </StandardChartCard>
         </div>
 
         {/* ======================================================================

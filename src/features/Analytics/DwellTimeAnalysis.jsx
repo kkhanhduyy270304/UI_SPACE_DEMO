@@ -158,6 +158,12 @@ const statusClass = {
   Low: 'bg-slate-100 text-slate-700 border border-slate-200'
 };
 
+const statusLabel = {
+  High: 'Cao',
+  Normal: 'Trung bình',
+  Low: 'Thấp'
+};
+
 /**
  * DwellTimeAnalysis - Analyze customer engagement duration across zones.
  */
@@ -171,22 +177,22 @@ export const DwellTimeAnalysis = () => {
 
   const kpiCards = useMemo(() => ([
     {
-      title: 'Average Store Dwell Time',
-      value: `${analyticsData.kpis.avgStoreDwell.toFixed(1)} mins`,
+      title: 'Thời gian dừng trung bình toàn cửa hàng',
+      value: `${analyticsData.kpis.avgStoreDwell.toFixed(1)} phút`,
       icon: <Clock className="h-5 w-5 text-teal-600" />
     },
     {
-      title: 'Peak Zone Dwell Time',
-      value: `${analyticsData.kpis.peakZoneDwell.toFixed(1)} mins`,
+      title: 'Thời gian dừng cao nhất theo khu vực',
+      value: `${analyticsData.kpis.peakZoneDwell.toFixed(1)} phút`,
       icon: <Timer className="h-5 w-5 text-indigo-600" />
     },
     {
-      title: 'High Engagement Ratio',
+      title: 'Tỷ lệ tương tác cao',
       value: `${analyticsData.kpis.highEngagementRatio.toFixed(1)}%`,
       icon: <UserCheck className="h-5 w-5 text-teal-600" />
     },
     {
-      title: 'Total Tracked Sessions',
+      title: 'Tổng phiên theo dõi',
       value: analyticsData.kpis.totalSessions.toLocaleString('en-US'),
       icon: <Activity className="h-5 w-5 text-indigo-600" />
     }
@@ -196,8 +202,8 @@ export const DwellTimeAnalysis = () => {
     <div className="min-h-screen rounded-2xl bg-white p-6">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dwell Time Analytics</h1>
-          <p className="mt-2 text-sm text-slate-600">Analyze customer engagement duration across zones.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Phân tích thời gian dừng</h1>
+          <p className="mt-2 text-sm text-slate-600">Phân tích mức độ tương tác của khách hàng theo từng khu vực.</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -214,7 +220,7 @@ export const DwellTimeAnalysis = () => {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-slate-900">Dwell Time Distribution</h2>
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Phân bố thời gian dừng</h2>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={analyticsData.distributionData} margin={{ top: 16, right: 14, left: -20, bottom: 6 }}>
@@ -237,7 +243,7 @@ export const DwellTimeAnalysis = () => {
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-slate-900">Average Dwell Time by Hour</h2>
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Thời gian dừng trung bình theo giờ</h2>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={analyticsData.hourlyData} margin={{ top: 16, right: 14, left: -20, bottom: 6 }}>
@@ -251,7 +257,7 @@ export const DwellTimeAnalysis = () => {
                   <XAxis dataKey="hour" stroke="#64748b" tick={{ fontSize: 12 }} />
                   <YAxis stroke="#64748b" tick={{ fontSize: 12 }} />
                   <Tooltip
-                    formatter={value => [`${value} mins`, 'Avg dwell']}
+                    formatter={value => [`${value} phút`, 'TB dừng']}
                     contentStyle={{
                       backgroundColor: '#ffffff',
                       border: '1px solid #cbd5e1',
@@ -269,16 +275,16 @@ export const DwellTimeAnalysis = () => {
 
         <div className="grid grid-cols-1 gap-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-slate-900">Zone Engagement Ranking</h2>
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Xếp hạng mức độ tương tác theo khu vực</h2>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[680px] text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-slate-500">
-                    <th className="px-3 py-3 font-medium">Rank</th>
-                    <th className="px-3 py-3 font-medium">Zone Name</th>
-                    <th className="px-3 py-3 font-medium text-right">Avg Dwell Time</th>
-                    <th className="px-3 py-3 font-medium text-right">Trend</th>
-                    <th className="px-3 py-3 font-medium text-right">Status</th>
+                    <th className="px-3 py-3 font-medium">Hạng</th>
+                    <th className="px-3 py-3 font-medium">Tên khu vực</th>
+                    <th className="px-3 py-3 font-medium text-right">Thời gian dừng TB</th>
+                    <th className="px-3 py-3 font-medium text-right">Xu hướng</th>
+                    <th className="px-3 py-3 font-medium text-right">Trạng thái</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -289,7 +295,7 @@ export const DwellTimeAnalysis = () => {
                       <tr key={zone.zoneName} className="border-b border-slate-200 text-slate-700">
                         <td className="px-3 py-3 font-mono text-slate-800">#{zone.rank}</td>
                         <td className="px-3 py-3 font-medium text-slate-800">{zone.zoneName}</td>
-                        <td className="px-3 py-3 text-right font-mono text-slate-900">{zone.avgMinutes.toFixed(1)} mins</td>
+                        <td className="px-3 py-3 text-right font-mono text-slate-900">{zone.avgMinutes.toFixed(1)} phút</td>
                         <td className="px-3 py-3">
                           <div className={`flex items-center justify-end gap-2 ${trend.textClass}`}>
                             {trend.icon}
@@ -298,7 +304,7 @@ export const DwellTimeAnalysis = () => {
                         </td>
                         <td className="px-3 py-3 text-right">
                           <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass[zone.status]}`}>
-                            {zone.status}
+                            {statusLabel[zone.status]}
                           </span>
                         </td>
                       </tr>
@@ -313,3 +319,5 @@ export const DwellTimeAnalysis = () => {
     </div>
   );
 };
+
+export default DwellTimeAnalysis;

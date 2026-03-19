@@ -1,14 +1,14 @@
-# 🛠️ SpaceLens Blueprint: Dwell Time Analysis Page
+﻿# ðŸ› ï¸ SpaceLens Blueprint: Dwell Time Analysis Page
 
 ## 1. Objective
 Build the "Dwell Time Analytics" page (`src/features/Analytics/DwellTimeAnalysis.jsx`). This page focuses exclusively on how long customers stay in the store and within specific zones. 
-**CRITICAL REQUIREMENT:** This page MUST strictly reuse the premium, dark-themed UI components and grid layout structure previously established in the `Dashboard.jsx` page (bg-slate-950 main background, bg-slate-900 cards, rounded-2xl, border-slate-800).
+**CRITICAL REQUIREMENT:** This page MUST strictly reuse the premium, light-themed UI components and grid layout structure previously established in the `Dashboard.jsx` page (bg-slate-50 main background, bg-white cards, rounded-2xl, border-slate-200).
 
 ## 2. UI/UX & Theming Standards (Reuse Dashboard Vibe)
-- **Theme:** Ultra-Dark Slate/Gray palette.
-- **Page Container:** `bg-slate-950 min-h-screen p-6`.
-- **Card Styling:** `bg-slate-900 rounded-2xl border border-slate-800 p-6`.
-- **Typography:** `text-white` for primary values, `text-slate-400` for subtitles/labels.
+- **Theme:** Light Slate/Gray palette.
+- **Page Container:** `bg-slate-50 min-h-screen p-6`.
+- **Card Styling:** `bg-white rounded-2xl border border-slate-200 p-6`.
+- **Typography:** `text-slate-900` for primary values, `text-slate-400` for subtitles/labels.
 - **Icons:** `lucide-react` (Clock, Timer, UserCheck, TrendingUp) using `text-teal-400` or `text-indigo-400` for accents.
 
 ## 3. Technical Requirements
@@ -24,7 +24,7 @@ Build the "Dwell Time Analytics" page (`src/features/Analytics/DwellTimeAnalysis
 ### Step 1: Page Setup & State
 - Open or create `src/features/Analytics/DwellTimeAnalysis.jsx`.
 - Wrap the content in the standard page container.
-- Add a Page Header: Title "Dwell Time Analytics" (`text-2xl font-bold text-white`) and a subtitle "Analyze customer engagement duration across zones."
+- Add a Page Header: Title "Dwell Time Analytics" (`text-2xl font-bold text-slate-900`) and a subtitle "Analyze customer engagement duration across zones."
 - Import `useSelector` to pull `{ locationId, cameraId, date }` from `state.filter`. Include a `useEffect` to mock data fetching when these change.
 
 ### Step 2: Layout Row 1 - Dwell Time KPIs
@@ -57,9 +57,9 @@ Define a CSS Grid row: `grid grid-cols-1 lg:grid-cols-3 gap-6`. Use a 2/3 and 1/
 
 #### 4.1: Zone Dwell Time Ranking Table (Left - col-span-2)
 - **Title:** "Zone Engagement Ranking".
-- **UI:** A clean, dark-themed table.
+- **UI:** A clean, light-themed table.
 - **Columns:** Rank, Zone Name, Avg Dwell Time, Trend (Arrow up/down), Status (e.g., "High", "Normal", "Low").
-- **Style:** `border-b border-slate-800` for table rows, `text-slate-300` for text.
+- **Style:** `border-b border-slate-200` for table rows, `text-slate-300` for text.
 
 
 

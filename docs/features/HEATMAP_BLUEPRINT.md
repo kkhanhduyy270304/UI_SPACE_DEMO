@@ -1,58 +1,49 @@
-Zone Management System (SVG Drawing Engine)
+SpaceLens Blueprint Update: Heatmap Timeline & Playback
+1. Objective
+Add a Temporal Layer (Trục thời gian) to the Heatmap. This allows users to scrub through different hours of the day or "Play" an animation to see how foot traffic flows over time.
+
+2. UI Component: The Range Slider Timeline
+Placement: Bottom of the Heatmap container, spanning full width.
+
+Style: - Track: bg-slate-800 h-1.5 rounded-full.
+
+Handle (Thumb): bg-teal-500 w-4 h-4 rounded-full shadow-lg border-2 border-white.
+
+Display: A floating tooltip above the handle showing the current time (e.g., 14:30).
+
+3. Playback Controls
+Next to the Timeline, add a control group:
+
+Play/Pause Button: To auto-increment the timeline.
+
+Speed Selector: (1x, 2x, 4x) to speed up the visual evolution of the heatmap.
+
+Loop Toggle: To restart the animation automatically.
+
+4. Implementation Logic (Tasks for AI)
+Step 1: Data Integration
+Instead of fetching a single heatmap_matrix, the API src/services/api/heatmapApi.js should now support fetching a Series of matrices for a time range (e.g., from 08:00 to 22:00).
+
+State: Add currentTimeIndex to heatmapSlice.js.
+
+Step 2: Canvas Animation Loop
+When the user hits "Play", use requestAnimationFrame to transition between matrices.
+
+Interpolation: (Advanced) If possible, smoothly fade the previous heatmap points into the new ones to avoid "flickering".
+
+Step 3: Filter Sync
+Ensure the Camera-only filter we discussed earlier remains, but it now acts as the anchor for this Timeline. When Camera is changed, the Timeline resets to the start of the day.
+
+5. Implementation Prompt for Copilot/Cursor
 Prompt:
+"I need to add a Timeline Playback feature to Heatmap.jsx based on the @BLUEPRINT_UPDATE.
 
-"Reconstruct the CameraZoneManager component based on the legacy source code.
+UI: Add a professional Range Slider at the bottom of the Heatmap canvas. Use bg-slate-800 for the bar and bg-teal-500 for the handle.
 
-Visuals: Use a relative container holding a camera snapshot image with an SVG layer exactly on top.
+Controls: Add Play/Pause and Playback Speed (1x, 2x, 4x) buttons using Lucide-react icons.
 
-Drawing Logic: Implement polygon drawing using normalized coordinates (0-1). Points must be calculated as clientX / imageWidth and clientY / imageHeight to ensure responsiveness.
+Logic: >    - The timeline should represent hours of the day (e.g., 08:00 - 22:00).
 
-Legacy Styles:
+As the user drags the slider, the Canvas should redraw the heatmap_matrix corresponding to that specific time.
 
-Vertices must be small draggable circles (6px, white fill, indigo stroke).
-
-Polygons should have a semi-transparent fill (fill-opacity="0.3") using the color property from the zone data.
-
-Active/Selected zones must have a dashed stroke-array border.
-
-Tools: Include the ToolDrawZone bar with modes: 'Select', 'Draw', 'Delete'.
-
-State: Sync with cameraZonesSlice using Redux. Each zone must have name, type, points[], and color."
-
-2. Heatmap Analysis Interface
-Prompt:
-
-"Recreate the Heatmap feature following the legacy CanvaHeatmap.jsx logic.
-
-Layering:
-
-Bottom: Static image from camera_id.
-
-Middle: A <canvas> element for the heatmap density.
-
-Top: Static SVG polygons of configured ROIs.
-
-Heatmap Algorithm: Use the legacy point-radius method. Each point from the heatmap.model.js schema (x, y, intensity) should be rendered with a radial gradient.
-
-Controls: Reconstruct the LeftSidebar with sliders for:
-
-Radius: Controls the spread of heat.
-
-Opacity: Controls the transparency of the canvas layer.
-
-Intensity: Scales the 'value' of each data point.
-
-Time Range: Ensure the date-time picker filters the data points correctly via the heatmap.thunk.js."
-
-3. Global Styling & Layout (The "Vibe")
-Prompt:
-
-"Apply the legacy styling system to the MainLayout.
-
-Typography: Use 'DM Sans' for general text and 'DM Mono' for numeric data (KPIs/Coordinates).
-
-Cards: Use the .card class with specific left-border accents (Indigo for general, Teal for active zones).
-
-Sidebar: Implement the legacy Navbar with the glassmorphism effect (bg-white/10 backdrop-blur-md).
-
-Components: Ensure all buttons use the legacy transition (transition: all .15s) and hover scales."
+When 'Play' is clicked, automatically advance the slider and update the heatmap every 500ms.

@@ -3,14 +3,14 @@ const SESSION_KEY = 'storelens.auth.session';
 const seedUsers = [{
   id: 'user-admin-001',
   fullName: 'System Admin',
-  email: 'admin@storelens.vn',
+  email: 'admin@spacelens.vn',
   password: 'admin123',
   role: 'admin',
   storeId: 'STORE001'
 }, {
   id: 'user-manager-001',
   fullName: 'Store Manager',
-  email: 'manager@storelens.vn',
+  email: 'manager@spacelens.vn',
   password: 'manager123',
   role: 'manager',
   storeId: 'STORE001'

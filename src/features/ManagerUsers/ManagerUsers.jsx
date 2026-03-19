@@ -137,38 +137,38 @@ export const ManagerUsers = () => {
         </div>
       </div>
 
-      {isModalOpen && <div className="fixed inset-0 bg-black/45 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl rounded-xl bg-slate-900/90 border border-white/20 shadow-2xl p-5 text-slate-100">
+      {isModalOpen && <div className="fixed inset-0 bg-black/35 z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-xl rounded-xl bg-white border border-slate-200 shadow-sm p-5 text-slate-900">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Them nguoi dung</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-300 hover:text-white">
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={onCreateUser} className="space-y-3">
               <div>
-                <label className="text-sm text-slate-300">Ho ten</label>
-                <input value={fullName} onChange={e => setFullName(e.target.value)} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm" />
+                <label className="text-sm text-slate-700">Ho ten</label>
+                <input value={fullName} onChange={e => setFullName(e.target.value)} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900" />
               </div>
               <div>
-                <label className="text-sm text-slate-300">Email</label>
-                <input value={email} onChange={e => setEmail(e.target.value)} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm" />
+                <label className="text-sm text-slate-700">Email</label>
+                <input value={email} onChange={e => setEmail(e.target.value)} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900" />
               </div>
               <div>
-                <label className="text-sm text-slate-300">Mat khau</label>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm" />
+                <label className="text-sm text-slate-700">Mat khau</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900" />
               </div>
               <div>
-                <label className="text-sm text-slate-300">Vai tro</label>
-                <select value={role} onChange={e => setRole(e.target.value)} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm">
+                <label className="text-sm text-slate-700">Vai tro</label>
+                <select value={role} onChange={e => setRole(e.target.value)} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900">
                   <option value="manager">Manager</option>
                   <option value="staff">Staff</option>
                 </select>
               </div>
               <div>
-                <label className="text-sm text-slate-300">Cua hang phu trach</label>
-                <select value={storeId} onChange={e => setStoreId(e.target.value)} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm">
+                <label className="text-sm text-slate-700">Cua hang phu trach</label>
+                <select value={storeId} onChange={e => setStoreId(e.target.value)} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900">
                   {stores.map(store => <option key={store.id} value={store.id}>{store.name}</option>)}
                 </select>
               </div>
@@ -176,7 +176,7 @@ export const ManagerUsers = () => {
               {error && <p className="text-sm text-rose-300">{error}</p>}
 
               <div className="pt-2 flex items-center justify-end gap-2">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-lg border border-slate-500 text-slate-200 hover:bg-slate-800 text-sm">Huy</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-sm">Huy</button>
                 <button type="submit" disabled={userLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium" style={{
               background: 'linear-gradient(135deg, #6366f1, #4f46e5)'
             }}>

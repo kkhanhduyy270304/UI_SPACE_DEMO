@@ -12,7 +12,7 @@ const defaults = {
     role: 'staff'
   },
   storeConfig: {
-    businessName: 'StoreLens Flagship',
+    businessName: 'SpaceLens Flagship',
     address: '123 Nguyen Hue, Ho Chi Minh City',
     contactPhone: '028-7300-8899',
     openingTime: '08:00',

@@ -13,7 +13,7 @@ export const Footer = () => {
           <div className="text-slate-500 text-sm">
             © 2026 <span className="font-semibold" style={{
             color: '#1E40AF'
-          }}>StoreLens</span> - C2SE.11 Team
+          }}>SpaceLens</span> - C2SE.11 Team
           </div>
 
           {/* System Version */}

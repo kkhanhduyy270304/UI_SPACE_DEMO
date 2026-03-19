@@ -1,4 +1,4 @@
-StoreLens Frontend Blueprint for AI Copilot
+﻿StoreLens Frontend Blueprint for AI Copilot
 1. Project Identity & Context
 You are an expert Frontend Developer building StoreLens - a real-time retail analytics dashboard.
 
@@ -58,7 +58,7 @@ camera_id: ObjectId
 data_points: Array of { x: number, y: number, intensity: number }
 
 4. UI/UX "Vibe" Guidelines
-Containers: Use bg-white/10 backdrop-blur-md border border-white/20 for a glassmorphism look.
+Containers: Use bg-white/10 backdrop-blur-md border border-slate-200 for a glassmorphism look.
 
 Colors:
 
@@ -89,13 +89,13 @@ Slices should be organized by feature: dashboardSlice, zoneSlice, authSlice.
 6. Project Structure Mapping
 Plaintext
 src/
- ├── assets/          # Static assets (logo, images)
- ├── components/      # Atomic UI components (Buttons, Cards, Modals)
- ├── features/        # Business logic & Page-level components
- │    ├── Dashboard/  # KPI cards, Global charts
- │    ├── Heatmap/    # Canvas-based density mapping
- │    └── Analytics/  # Dwell time & Zone comparison
- ├── redux/           # Store config & Slices
- ├── services/        # Axios instance & API calls
- ├── styles/          # Tailwind & Global CSS
- └── utils/           # Formatters (currency, time, stop_watch)
+ â”œâ”€â”€ assets/          # Static assets (logo, images)
+ â”œâ”€â”€ components/      # Atomic UI components (Buttons, Cards, Modals)
+ â”œâ”€â”€ features/        # Business logic & Page-level components
+ â”‚    â”œâ”€â”€ Dashboard/  # KPI cards, Global charts
+ â”‚    â”œâ”€â”€ Heatmap/    # Canvas-based density mapping
+ â”‚    â””â”€â”€ Analytics/  # Dwell time & Zone comparison
+ â”œâ”€â”€ redux/           # Store config & Slices
+ â”œâ”€â”€ services/        # Axios instance & API calls
+ â”œâ”€â”€ styles/          # Tailwind & Global CSS
+ â””â”€â”€ utils/           # Formatters (currency, time, stop_watch)

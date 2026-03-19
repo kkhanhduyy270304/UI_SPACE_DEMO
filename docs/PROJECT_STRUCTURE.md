@@ -1,4 +1,4 @@
-# StoreLens Frontend - Project Structure
+﻿# StoreLens Frontend - Project Structure
 
 This document explains the complete project structure created following the `.cursorrules` blueprint.
 
@@ -6,60 +6,60 @@ This document explains the complete project structure created following the `.cu
 
 ```
 src/
-├── assets/                 # Static assets (images, logos)
-│   ├── hero.png
-│   ├── react.svg
-│   └── vite.svg
-│
-├── components/             # Reusable UI components
-│   ├── common/             # Atomic components (buttons, cards, etc.)
-│   │   ├── Button.tsx      # Reusable button with variants
-│   │   ├── Card.tsx        # Glassmorphism card component
-│   │   └── index.ts        # Barrel export
-│   └── layout/             # Layout components
-│       └── Layout.tsx      # Main app layout wrapper
-│
-├── features/               # Feature-based modules (pages + logic)
-│   ├── Dashboard/          # Global KPIs & charts
-│   │   ├── Dashboard.tsx   # Main dashboard page
-│   │   └── index.ts
-│   ├── Heatmap/            # 2D density visualization
-│   │   ├── Heatmap.tsx     # Canvas-based heatmap
-│   │   └── index.ts
-│   └── Analytics/          # Zone comparison & dwell time analysis
-│       ├── Analytics.tsx   # Zone analytics page
-│       └── index.ts
-│
-├── redux/                  # State management
-│   ├── slices/             # Feature slices
-│   │   ├── dashboardSlice.ts  # Dashboard state & async thunks
-│   │   ├── heatmapSlice.ts    # Heatmap state & async thunks
-│   │   └── zoneSlice.ts       # Zone stats state & async thunks
-│   ├── store/              # Redux store configuration
-│   │   └── index.ts        # Store setup with middleware
-│   └── hooks.ts            # Typed Redux hooks (useAppDispatch, useAppSelector)
-│
-├── services/               # External API communication
-│   └── api/
-│       ├── client.ts       # Axios instance with interceptors
-│       ├── dashboardApi.ts # Dashboard API endpoints
-│       ├── heatmapApi.ts   # Heatmap API endpoints
-│       └── zoneApi.ts      # Zone stats API endpoints
-│
-├── types/                  # TypeScript type definitions
-│   └── index.ts            # Database schema types (StoreSummary, ZoneStats, etc.)
-│
-├── utils/                  # Utility functions
-│   ├── formatters.ts       # Currency & number formatters
-│   ├── timeFormatters.ts   # Time & date formatters
-│   └── mockData.ts         # Mock data generators for prototyping
-│
-├── styles/                 # Global styles (reserved for Tailwind configs)
-│
-├── App.css
-├── App.jsx
-├── index.css
-└── main.jsx
+â”œâ”€â”€ assets/                 # Static assets (images, logos)
+â”‚   â”œâ”€â”€ hero.png
+â”‚   â”œâ”€â”€ react.svg
+â”‚   â””â”€â”€ vite.svg
+â”‚
+â”œâ”€â”€ components/             # Reusable UI components
+â”‚   â”œâ”€â”€ common/             # Atomic components (buttons, cards, etc.)
+â”‚   â”‚   â”œâ”€â”€ Button.tsx      # Reusable button with variants
+â”‚   â”‚   â”œâ”€â”€ Card.tsx        # Glassmorphism card component
+â”‚   â”‚   â””â”€â”€ index.ts        # Barrel export
+â”‚   â””â”€â”€ layout/             # Layout components
+â”‚       â””â”€â”€ Layout.tsx      # Main app layout wrapper
+â”‚
+â”œâ”€â”€ features/               # Feature-based modules (pages + logic)
+â”‚   â”œâ”€â”€ Dashboard/          # Global KPIs & charts
+â”‚   â”‚   â”œâ”€â”€ Dashboard.tsx   # Main dashboard page
+â”‚   â”‚   â””â”€â”€ index.ts
+â”‚   â”œâ”€â”€ Heatmap/            # 2D density visualization
+â”‚   â”‚   â”œâ”€â”€ Heatmap.tsx     # Canvas-based heatmap
+â”‚   â”‚   â””â”€â”€ index.ts
+â”‚   â””â”€â”€ Analytics/          # Zone comparison & dwell time analysis
+â”‚       â”œâ”€â”€ Analytics.tsx   # Zone analytics page
+â”‚       â””â”€â”€ index.ts
+â”‚
+â”œâ”€â”€ redux/                  # State management
+â”‚   â”œâ”€â”€ slices/             # Feature slices
+â”‚   â”‚   â”œâ”€â”€ dashboardSlice.ts  # Dashboard state & async thunks
+â”‚   â”‚   â”œâ”€â”€ heatmapSlice.ts    # Heatmap state & async thunks
+â”‚   â”‚   â””â”€â”€ zoneSlice.ts       # Zone stats state & async thunks
+â”‚   â”œâ”€â”€ store/              # Redux store configuration
+â”‚   â”‚   â””â”€â”€ index.ts        # Store setup with middleware
+â”‚   â””â”€â”€ hooks.ts            # Typed Redux hooks (useAppDispatch, useAppSelector)
+â”‚
+â”œâ”€â”€ services/               # External API communication
+â”‚   â””â”€â”€ api/
+â”‚       â”œâ”€â”€ client.ts       # Axios instance with interceptors
+â”‚       â”œâ”€â”€ dashboardApi.ts # Dashboard API endpoints
+â”‚       â”œâ”€â”€ heatmapApi.ts   # Heatmap API endpoints
+â”‚       â””â”€â”€ zoneApi.ts      # Zone stats API endpoints
+â”‚
+â”œâ”€â”€ types/                  # TypeScript type definitions
+â”‚   â””â”€â”€ index.ts            # Database schema types (StoreSummary, ZoneStats, etc.)
+â”‚
+â”œâ”€â”€ utils/                  # Utility functions
+â”‚   â”œâ”€â”€ formatters.ts       # Currency & number formatters
+â”‚   â”œâ”€â”€ timeFormatters.ts   # Time & date formatters
+â”‚   â””â”€â”€ mockData.ts         # Mock data generators for prototyping
+â”‚
+â”œâ”€â”€ styles/                 # Global styles (reserved for Tailwind configs)
+â”‚
+â”œâ”€â”€ App.css
+â”œâ”€â”€ App.jsx
+â”œâ”€â”€ index.css
+â””â”€â”€ main.jsx
 
 ```
 
@@ -99,19 +99,19 @@ src/
 
 ## Tech Stack Compliance
 
-✅ **React 18 + Vite + TypeScript**
-✅ **Tailwind CSS** (configured)
-✅ **Redux Toolkit** (slices, thunks, typed hooks)
-✅ **Axios** (API client with interceptors)
-✅ **Framer Motion** (animations)
-✅ **Lucide React** (icons - ready for integration)
-✅ **Recharts** (ready for chart integration)
+âœ… **React 18 + Vite + TypeScript**
+âœ… **Tailwind CSS** (configured)
+âœ… **Redux Toolkit** (slices, thunks, typed hooks)
+âœ… **Axios** (API client with interceptors)
+âœ… **Framer Motion** (animations)
+âœ… **Lucide React** (icons - ready for integration)
+âœ… **Recharts** (ready for chart integration)
 
 ## Design System
 
 ### Glassmorphism
 ```tsx
-bg-white/10 backdrop-blur-md border border-white/20
+bg-white/10 backdrop-blur-md border border-slate-200
 ```
 
 ### Color Palette
@@ -151,4 +151,5 @@ VITE_ENV=development
 
 ---
 
-**Structure Status**: ✅ Complete & Production-Ready
+**Structure Status**: âœ… Complete & Production-Ready
+
