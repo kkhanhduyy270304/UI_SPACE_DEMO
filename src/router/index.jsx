@@ -8,6 +8,7 @@ import { Analytics, DwellTimeAnalysis, CustomerAnalysis, ZoneAnalysis } from '..
 import { RuleConfiguration } from '../features/RuleConfiguration';
 import { ZoneManager } from '../features/ZoneManager';
 import { CustomerManagement } from '../features/CustomerManagement';
+import { AssetManagement } from '../features/AssetManagement';
 import { CameraManager } from '../features/CameraManager';
 import { ManagerUsers } from '../features/ManagerUsers';
 import { Settings } from '../features/Settings';
@@ -60,7 +61,7 @@ export const AppRouter = () => {
           <Route path="/management/zones" element={<ZoneManager />} />
           <Route path="/management/users" element={<ManagerUsers />} />
           <Route path="/management/customers" element={<CustomerManagement />} />
-          <Route path="/management/products" element={<div className="text-slate-900">Quản lý sản phẩm</div>} />
+          <Route path="/management/products" element={<AssetManagement />} />
           <Route path="/management/rules" element={<RuleConfiguration />} />
 
           <Route path="/settings" element={<Settings />} />
