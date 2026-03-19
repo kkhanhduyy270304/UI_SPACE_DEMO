@@ -1,4 +1,4 @@
-1. Functional Objective
+﻿1. Functional Objective
 The Settings Page is the control center for both individual users and system-wide configurations.
 
 Personal Settings: Profile update, password change.
@@ -31,14 +31,14 @@ Reporting Schedule: Select days/times to receive automated PDF reports via email
 
 3. UI Components & Styles (Tailwind CSS)
 Setting Groups
-Container: bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 mb-6.
+Container: bg-white/5 backdrop-blur-md border border-slate-200 rounded-2xl p-6 mb-6.
 
-Title: text-lg font-bold text-slate-100 mb-4 flex items-center gap-2.
+Title: text-lg font-bold text-slate-900 mb-4 flex items-center gap-2.
 
 Labels: text-xs font-semibold text-slate-400 uppercase tracking-wider.
 
 Form Elements
-Inputs: bg-slate-900/50 border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg text-sm.
+Inputs: bg-white/50 border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg text-sm.
 
 Toggle Switch: A smooth animated switch for "Dark Mode" or "Email Notifications".
 
@@ -51,7 +51,7 @@ State: Sync local form changes before calling the updateUser or updateStore thun
 Prompt for Copilot
 "Create the Settings page using a vertical tab layout (Profile, Security, System, Notifications).
 
-Use the Glassmorphism style from the Dashboard: bg-white/5 border-white/10.
+Use the Glassmorphism style from the Dashboard: bg-white/5 border-slate-200.
 
 Ensure that only users with the admin role can see the 'System' and 'Store Config' tabs.
 

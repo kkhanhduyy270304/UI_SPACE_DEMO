@@ -1,4 +1,4 @@
-1. Overview Dashboard (Based on image_7b1026.png)
+﻿1. Overview Dashboard (Based on image_7b1026.png)
 The dashboard must follow a strictly structured grid.
 
 KPI Row (Top)
@@ -63,9 +63,9 @@ Progress Bars: For "Target vs Actual" revenue, use thin horizontal bars inside t
 5. Specific Prompt for Copilot (Copy & Paste)
 "Implement the UI based on the attached images.
 
-Use Tailwind CSS for the 'Glassmorphism' effect: backdrop-blur-md bg-opacity-10 border border-white/20.
+Use Tailwind CSS for the 'Glassmorphism' effect: backdrop-blur-md bg-opacity-10 border border-slate-200.
 
-For charts, use Recharts with custom Tooltips that match the dark theme.
+For charts, use Recharts with custom Tooltips that match the light theme.
 
 Ensure the Heatmap Canvas scale matches the natural aspect ratio of the background image to prevent coordinate drifting.
 

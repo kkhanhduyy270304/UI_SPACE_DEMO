@@ -19,18 +19,18 @@ const cameraImage = "data:image/svg+xml;utf8," + encodeURIComponent(`
   <svg xmlns='http://www.w3.org/2000/svg' width='1280' height='720' viewBox='0 0 1280 720'>
     <defs>
       <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>
-        <stop offset='0%' stop-color='#0f172a' />
-        <stop offset='100%' stop-color='#1f2937' />
+        <stop offset='0%' stop-color='#f8fafc' />
+        <stop offset='100%' stop-color='#e2e8f0' />
       </linearGradient>
       <pattern id='grid' width='30' height='30' patternUnits='userSpaceOnUse'>
-        <path d='M 30 0 L 0 0 0 30' fill='none' stroke='rgba(148,163,184,0.18)' stroke-width='1' />
+        <path d='M 30 0 L 0 0 0 30' fill='none' stroke='rgba(148,163,184,0.35)' stroke-width='1' />
       </pattern>
     </defs>
     <rect width='1280' height='720' fill='url(#bg)' />
     <rect width='1280' height='720' fill='url(#grid)' />
-    <rect x='52' y='42' width='1170' height='640' rx='18' fill='none' stroke='rgba(148,163,184,0.4)' stroke-width='3' />
-    <text x='640' y='338' font-family='DM Sans, sans-serif' font-size='44' font-weight='700' fill='#e2e8f0' text-anchor='middle'>Camera Snapshot</text>
-    <text x='640' y='380' font-family='DM Sans, sans-serif' font-size='20' fill='#94a3b8' text-anchor='middle'>Draw and manage ROI zones for AI tracking</text>
+    <rect x='52' y='42' width='1170' height='640' rx='18' fill='none' stroke='rgba(148,163,184,0.45)' stroke-width='3' />
+    <text x='640' y='338' font-family='DM Sans, sans-serif' font-size='44' font-weight='700' fill='#0f172a' text-anchor='middle'>Anh chup camera</text>
+    <text x='640' y='380' font-family='DM Sans, sans-serif' font-size='20' fill='#475569' text-anchor='middle'>Ve va quan ly vung ROI cho AI theo doi</text>
   </svg>
 `);
 const defaultZoneName = count => `Zone_${count + 1}`;
@@ -315,7 +315,7 @@ export const ZoneManager = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <div className="lg:col-span-9 rounded-xl border border-slate-200 bg-slate-50 p-3">
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-slate-700 text-white text-sm px-3 py-1">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-slate-200 text-slate-800 text-sm px-3 py-1">
                 <PencilLine size={14} /> Click 4 điểm để tạo vùng mới
               </div>
 
@@ -336,9 +336,9 @@ export const ZoneManager = () => {
                   const polygonPoints = zone.points.map(p => `${p.x * 100},${p.y * 100}`).join(' ');
                   const isActive = activeZoneId === zone._id;
                   return <g key={zone._id}>
-                          <polygon points={polygonPoints} fill={`${zone.color}4D`} stroke={zone.color} strokeWidth={isActive ? 0.8 : 0.56} strokeDasharray={isActive ? '1.5 1.2' : undefined} onClick={evt => handlePolygonClick(evt, zone._id)} />
+                          <polygon points={polygonPoints} fill={`${zone.color}4D`} stroke={zone.color} strokeWidth={isActive ? 0.8 : 0.56} strokeDasharray={isActive ? '5,5' : undefined} onClick={evt => handlePolygonClick(evt, zone._id)} />
 
-                          {(isActive || mode === 'select' || mode === 'delete') && zone.points.map((point, idx) => <rect key={`${zone._id}-${idx}`} x={point.x * 100 - 0.5} y={point.y * 100 - 0.5} width={1} height={1} fill="white" stroke="#6366f1" strokeWidth={0.18} onMouseDown={evt => {
+                          {(isActive || mode === 'select' || mode === 'delete') && zone.points.map((point, idx) => <circle key={`${zone._id}-${idx}`} cx={point.x * 100} cy={point.y * 100} r={0.65} fill="white" stroke="#4f46e5" strokeWidth={0.24} onMouseDown={evt => {
                       evt.stopPropagation();
                       handleVertexDown(zone._id, idx);
                     }} onClick={evt => {
@@ -359,7 +359,7 @@ export const ZoneManager = () => {
 
                         {cursorPoint && <line x1={draftPoints[draftPoints.length - 1].x * 100} y1={draftPoints[draftPoints.length - 1].y * 100} x2={cursorPoint.x * 100} y2={cursorPoint.y * 100} stroke="#2563EB" strokeWidth={0.6} strokeDasharray="1.7 1" />}
 
-                        {draftPoints.map((point, idx) => <rect key={`draft-${idx}`} x={point.x * 100 - 0.5} y={point.y * 100 - 0.5} width={1} height={1} fill="white" stroke="#6366f1" strokeWidth={0.18} />)}
+                        {draftPoints.map((point, idx) => <circle key={`draft-${idx}`} cx={point.x * 100} cy={point.y * 100} r={0.65} fill="white" stroke="#4f46e5" strokeWidth={0.24} />)}
                       </>}
                   </svg>}
 
@@ -456,7 +456,7 @@ export const ZoneManager = () => {
                 </div>
               </div>
 
-              <button onClick={createZoneFromDraft} disabled={draftPoints.length < 3} className="w-full rounded-xl bg-slate-300 disabled:bg-slate-300 disabled:text-slate-100 text-slate-100 px-4 py-3 text-lg font-semibold inline-flex items-center justify-center gap-2">
+              <button onClick={createZoneFromDraft} disabled={draftPoints.length < 3} className="w-full rounded-xl bg-indigo-600 disabled:bg-slate-300 disabled:text-slate-100 text-white px-4 py-3 text-lg font-semibold inline-flex items-center justify-center gap-2">
                 <Save size={20} /> Lưu zone
               </button>
             </div>

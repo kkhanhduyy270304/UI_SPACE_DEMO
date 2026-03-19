@@ -34,13 +34,13 @@ const DAY_OPTIONS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const ToggleSwitch = ({ checked, onChange, label }) => {
   return (
     <label className="flex items-center justify-between gap-3 py-2">
-      <span className="text-sm text-slate-200">{label}</span>
+      <span className="text-sm text-slate-700">{label}</span>
       <button
         type="button"
         aria-pressed={checked}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-          checked ? 'bg-indigo-500' : 'bg-slate-600'
+          checked ? 'bg-indigo-500' : 'bg-slate-300'
         }`}
       >
         <span
@@ -55,8 +55,8 @@ const ToggleSwitch = ({ checked, onChange, label }) => {
 
 const SectionCard = ({ icon, title, children }) => {
   return (
-    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 mb-6">
-      <h3 className="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2">
+    <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
+      <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
         {icon}
         {title}
       </h3>
@@ -66,24 +66,24 @@ const SectionCard = ({ icon, title, children }) => {
 };
 
 const inputClassName =
-  'mt-1 w-full rounded-lg border border-slate-700 bg-slate-900/50 px-3 py-2 text-sm text-slate-100 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500';
+  'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30';
 
-const labelClassName = 'text-xs font-semibold text-slate-400 uppercase tracking-wider';
+const labelClassName = 'text-xs font-semibold text-slate-500 uppercase tracking-wider';
 
-const ConfirmationModal = ({ open, title, description, onCancel, onConfirm, confirmLabel = 'Confirm' }) => {
+const ConfirmationModal = ({ open, title, description, onCancel, onConfirm, confirmLabel = 'Xác nhận' }) => {
   if (!open) {
     return null;
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-rose-400/30 bg-slate-900/95 p-6 text-slate-100 shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="w-full max-w-lg rounded-2xl border border-rose-200 bg-white p-6 text-slate-900 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-rose-300">{title}</h2>
-            <p className="mt-2 text-sm text-slate-300">{description}</p>
+            <h2 className="text-xl font-semibold text-rose-600">{title}</h2>
+            <p className="mt-2 text-sm text-slate-600">{description}</p>
           </div>
-          <button type="button" onClick={onCancel} className="text-slate-300 hover:text-white">
+          <button type="button" onClick={onCancel} className="text-slate-500 hover:text-slate-900">
             <X size={18} />
           </button>
         </div>
@@ -92,9 +92,9 @@ const ConfirmationModal = ({ open, title, description, onCancel, onConfirm, conf
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
           >
-            Cancel
+            Hủy
           </button>
           <button
             type="button"
@@ -132,12 +132,12 @@ const ChangePasswordModal = ({ open, onCancel, onSubmit, saving }) => {
     event.preventDefault();
 
     if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters');
+      setError('Mật khẩu mới phải có ít nhất 8 ký tự');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Confirm password does not match');
+      setError('Mật khẩu xác nhận không khớp');
       return;
     }
 
@@ -149,18 +149,18 @@ const ChangePasswordModal = ({ open, onCancel, onSubmit, saving }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-slate-900/95 p-6 text-slate-100 shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-sm">
         <div className="flex items-center justify-between gap-4 mb-5">
-          <h2 className="text-xl font-semibold">Change Password</h2>
-          <button type="button" onClick={onCancel} className="text-slate-300 hover:text-white">
+          <h2 className="text-xl font-semibold">Đổi mật khẩu</h2>
+          <button type="button" onClick={onCancel} className="text-slate-500 hover:text-slate-900">
             <X size={18} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className={labelClassName}>Current Password</label>
+            <label className={labelClassName}>Mật khẩu hiện tại</label>
             <input
               type="password"
               value={currentPassword}
@@ -171,7 +171,7 @@ const ChangePasswordModal = ({ open, onCancel, onSubmit, saving }) => {
           </div>
 
           <div>
-            <label className={labelClassName}>New Password</label>
+            <label className={labelClassName}>Mật khẩu mới</label>
             <input
               type="password"
               value={newPassword}
@@ -182,7 +182,7 @@ const ChangePasswordModal = ({ open, onCancel, onSubmit, saving }) => {
           </div>
 
           <div>
-            <label className={labelClassName}>Confirm New Password</label>
+            <label className={labelClassName}>Xác nhận mật khẩu mới</label>
             <input
               type="password"
               value={confirmPassword}
@@ -198,16 +198,16 @@ const ChangePasswordModal = ({ open, onCancel, onSubmit, saving }) => {
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
               disabled={saving}
               className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
             >
-              {saving ? 'Updating...' : 'Update Password'}
+              {saving ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'}
             </button>
           </div>
         </form>
@@ -228,14 +228,14 @@ export const Settings = () => {
 
   const availableTabs = useMemo(() => {
     const baseTabs = [
-      { id: 'profile', label: 'Profile', icon: <User size={16} /> },
-      { id: 'security', label: 'Security', icon: <Lock size={16} /> },
-      { id: 'notifications', label: 'Notifications', icon: <Bell size={16} /> }
+      { id: 'profile', label: 'Hồ sơ', icon: <User size={16} /> },
+      { id: 'security', label: 'Bảo mật', icon: <Lock size={16} /> },
+      { id: 'notifications', label: 'Thông báo', icon: <Bell size={16} /> }
     ];
 
     if (isAdmin) {
-      baseTabs.splice(2, 0, { id: 'store', label: 'Store Config', icon: <Building2 size={16} /> });
-      baseTabs.splice(3, 0, { id: 'system', label: 'System', icon: <Wrench size={16} /> });
+      baseTabs.splice(2, 0, { id: 'store', label: 'Cấu hình cửa hàng', icon: <Building2 size={16} /> });
+      baseTabs.splice(3, 0, { id: 'system', label: 'Hệ thống', icon: <Wrench size={16} /> });
     }
 
     return baseTabs;
@@ -353,29 +353,29 @@ export const Settings = () => {
   };
 
   if (loading && !profile) {
-    return <p className="text-slate-200">Loading settings...</p>;
+    return <p className="text-slate-700">Đang tải cài đặt...</p>;
   }
 
   return (
-    <div className="min-h-[70vh] rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_right,_rgba(99,102,241,0.25),_rgba(15,23,42,0.95)_55%)] p-4 md:p-8">
+    <div className="min-h-[70vh] rounded-3xl border border-slate-200 bg-slate-50 p-4 md:p-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-100">Settings Center</h1>
-        <p className="mt-2 text-sm text-slate-300">
-          Manage profile, security, system behavior, and integration settings for your StoreLens workspace.
+        <h1 className="text-3xl font-bold text-slate-900">Trung tâm cài đặt</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Quản lý hồ sơ, bảo mật, hành vi hệ thống và cấu hình tích hợp cho không gian làm việc SpaceLens.
         </p>
       </div>
 
       {(error || successMessage) && (
         <div className="mb-4">
-          {error && <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-sm text-rose-300">{error}</div>}
+          {error && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
           {successMessage && (
-            <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-300">{successMessage}</div>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{successMessage}</div>
           )}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] gap-5">
-        <aside className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-3 h-max">
+        <aside className="rounded-2xl border border-slate-200 bg-white p-3 h-max shadow-sm">
           <div className="space-y-1">
             {availableTabs.map(tab => (
               <button
@@ -384,8 +384,8 @@ export const Settings = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full rounded-xl px-3 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-indigo-500/30 text-indigo-100 border border-indigo-400/30'
-                    : 'text-slate-300 hover:bg-white/10'
+                    ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                    : 'text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 {tab.icon}
@@ -397,21 +397,21 @@ export const Settings = () => {
 
         <section>
           {activeTab === 'profile' && (
-            <SectionCard icon={<User size={18} className="text-indigo-300" />} title="Profile Information">
+            <SectionCard icon={<User size={18} className="text-indigo-600" />} title="Thông tin hồ sơ">
               <form onSubmit={onSaveProfile} className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="relative h-20 w-20 rounded-full border border-white/20 bg-slate-800/80 flex items-center justify-center overflow-hidden">
+                  <div className="relative h-20 w-20 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center overflow-hidden">
                     {profileForm.avatarUrl ? (
                       <img src={profileForm.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
                     ) : (
-                      <User className="text-slate-400" size={30} />
+                      <User className="text-slate-500" size={30} />
                     )}
-                    <span className="absolute bottom-0 inset-x-0 bg-black/50 text-center text-[11px] text-slate-100 py-1">Edit</span>
+                    <span className="absolute bottom-0 inset-x-0 bg-white/80 text-center text-[11px] text-slate-700 py-1">Sửa</span>
                   </div>
 
                   <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className={labelClassName}>Avatar URL</label>
+                      <label className={labelClassName}>URL ảnh đại diện</label>
                       <input
                         value={profileForm.avatarUrl || ''}
                         onChange={event => setProfileForm(prev => ({ ...prev, avatarUrl: event.target.value }))}
@@ -419,8 +419,8 @@ export const Settings = () => {
                       />
                     </div>
                     <div>
-                      <label className={labelClassName}>Role</label>
-                      <div className="mt-1 inline-flex rounded-full border border-indigo-400/35 bg-indigo-500/20 px-3 py-2 text-xs font-semibold uppercase text-indigo-200">
+                      <label className={labelClassName}>Vai trò</label>
+                      <div className="mt-1 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold uppercase text-indigo-700">
                         {profileForm.role}
                       </div>
                     </div>
@@ -429,7 +429,7 @@ export const Settings = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className={labelClassName}>Full Name</label>
+                    <label className={labelClassName}>Họ và tên</label>
                     <input
                       value={profileForm.fullName || ''}
                       onChange={event => setProfileForm(prev => ({ ...prev, fullName: event.target.value }))}
@@ -454,9 +454,9 @@ export const Settings = () => {
                   <button
                     type="button"
                     onClick={() => setPasswordOpen(true)}
-                    className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                   >
-                    Change Password
+                    Đổi mật khẩu
                   </button>
 
                   <button
@@ -465,7 +465,7 @@ export const Settings = () => {
                     className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
                   >
                     <Save size={15} />
-                    {saving ? 'Saving...' : 'Save Profile'}
+                    {saving ? 'Đang lưu...' : 'Lưu hồ sơ'}
                   </button>
                 </div>
               </form>
@@ -473,16 +473,16 @@ export const Settings = () => {
           )}
 
           {activeTab === 'security' && (
-            <SectionCard icon={<Shield size={18} className="text-indigo-300" />} title="Security Controls">
+            <SectionCard icon={<Shield size={18} className="text-indigo-600" />} title="Kiểm soát bảo mật">
               <div className="space-y-4">
-                <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
-                  <p className="text-sm text-slate-200">Password and account protection settings are managed here.</p>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm text-slate-700">Cài đặt bảo vệ mật khẩu và tài khoản được quản lý tại đây.</p>
                   <button
                     type="button"
                     onClick={() => setPasswordOpen(true)}
                     className="mt-3 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                   >
-                    Open Change Password Modal
+                    Mở hộp thoại đổi mật khẩu
                   </button>
                 </div>
               </div>
@@ -490,11 +490,11 @@ export const Settings = () => {
           )}
 
           {activeTab === 'store' && isAdmin && (
-            <SectionCard icon={<Building2 size={18} className="text-indigo-300" />} title="Store / Business Configuration">
+            <SectionCard icon={<Building2 size={18} className="text-indigo-600" />} title="Cấu hình cửa hàng / doanh nghiệp">
               <form onSubmit={onSaveStore} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className={labelClassName}>Business Name</label>
+                    <label className={labelClassName}>Tên doanh nghiệp</label>
                     <input
                       value={storeForm.businessName || ''}
                       onChange={event => setStoreForm(prev => ({ ...prev, businessName: event.target.value }))}
@@ -502,7 +502,7 @@ export const Settings = () => {
                     />
                   </div>
                   <div>
-                    <label className={labelClassName}>Contact</label>
+                    <label className={labelClassName}>Liên hệ</label>
                     <input
                       value={storeForm.contactPhone || ''}
                       onChange={event => setStoreForm(prev => ({ ...prev, contactPhone: event.target.value }))}
@@ -512,7 +512,7 @@ export const Settings = () => {
                 </div>
 
                 <div>
-                  <label className={labelClassName}>Address</label>
+                    <label className={labelClassName}>Địa chỉ</label>
                   <input
                     value={storeForm.address || ''}
                     onChange={event => setStoreForm(prev => ({ ...prev, address: event.target.value }))}
@@ -522,7 +522,7 @@ export const Settings = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className={labelClassName}>Opening Time</label>
+                    <label className={labelClassName}>Giờ mở cửa</label>
                     <input
                       type="time"
                       value={storeForm.openingTime || '08:00'}
@@ -531,7 +531,7 @@ export const Settings = () => {
                     />
                   </div>
                   <div>
-                    <label className={labelClassName}>Closing Time</label>
+                    <label className={labelClassName}>Giờ đóng cửa</label>
                     <input
                       type="time"
                       value={storeForm.closingTime || '22:00'}
@@ -542,7 +542,7 @@ export const Settings = () => {
                 </div>
 
                 <div>
-                  <label className={labelClassName}>Dwell Time Threshold: {storeForm.dwellThreshold}s</label>
+                  <label className={labelClassName}>Ngưỡng thời gian dừng: {storeForm.dwellThreshold}s</label>
                   <input
                     type="range"
                     min="5"
@@ -565,7 +565,7 @@ export const Settings = () => {
                     className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
                   >
                     <Save size={15} />
-                    {saving ? 'Saving...' : 'Save Store Config'}
+                    {saving ? 'Đang lưu...' : 'Lưu cấu hình cửa hàng'}
                   </button>
                 </div>
               </form>
@@ -574,11 +574,11 @@ export const Settings = () => {
 
           {activeTab === 'system' && isAdmin && (
             <>
-              <SectionCard icon={<Wrench size={18} className="text-indigo-300" />} title="System Settings">
+              <SectionCard icon={<Wrench size={18} className="text-indigo-600" />} title="Cài đặt hệ thống">
                 <form onSubmit={onSaveSystem} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className={labelClassName}>Primary API Key</label>
+                      <label className={labelClassName}>API Key chính</label>
                       <div className="relative">
                         <KeyRound size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input
@@ -590,7 +590,7 @@ export const Settings = () => {
                       </div>
                     </div>
                     <div>
-                      <label className={labelClassName}>Backup API Key</label>
+                      <label className={labelClassName}>API Key dự phòng</label>
                       <div className="relative">
                         <KeyRound size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input
@@ -604,7 +604,7 @@ export const Settings = () => {
                   </div>
 
                   <div>
-                    <label className={labelClassName}>Global AI Sensitivity: {systemForm.aiSensitivity}%</label>
+                    <label className={labelClassName}>Độ nhạy AI toàn cục: {systemForm.aiSensitivity}%</label>
                     <input
                       type="range"
                       min="0"
@@ -624,12 +624,12 @@ export const Settings = () => {
                     <ToggleSwitch
                       checked={Boolean(systemForm.darkMode)}
                       onChange={value => setSystemForm(prev => ({ ...prev, darkMode: value }))}
-                      label="Dark Mode"
+                      label="Chế độ tối"
                     />
                     <ToggleSwitch
                       checked={Boolean(systemForm.emailNotifications)}
                       onChange={value => setSystemForm(prev => ({ ...prev, emailNotifications: value }))}
-                      label="Email Notifications"
+                      label="Thông báo email"
                     />
                   </div>
 
@@ -640,28 +640,28 @@ export const Settings = () => {
                       className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
                     >
                       <Save size={15} />
-                      {saving ? 'Saving...' : 'Save System Settings'}
+                      {saving ? 'Đang lưu...' : 'Lưu cài đặt hệ thống'}
                     </button>
                   </div>
                 </form>
               </SectionCard>
 
-              <SectionCard icon={<AlertTriangle size={18} className="text-rose-400" />} title="Danger Zone">
-                <p className="text-sm text-slate-300 mb-4">Dangerous actions below can reset key configurations. Handle with care.</p>
+              <SectionCard icon={<AlertTriangle size={18} className="text-rose-500" />} title="Vùng nguy hiểm">
+                <p className="text-sm text-slate-600 mb-4">Các thao tác bên dưới có thể đặt lại cấu hình quan trọng. Hãy cẩn thận.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setConfirmAction('reset-system')}
                     className="rounded-lg border border-rose-500/40 px-4 py-2 text-sm font-medium text-rose-300 hover:bg-rose-500/10"
                   >
-                    Reset System + Notifications
+                    Đặt lại hệ thống + thông báo
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmAction('reset-store')}
                     className="rounded-lg border border-rose-500/40 px-4 py-2 text-sm font-medium text-rose-300 hover:bg-rose-500/10"
                   >
-                    Reset Store Config
+                    Đặt lại cấu hình cửa hàng
                   </button>
                 </div>
               </SectionCard>
@@ -669,7 +669,7 @@ export const Settings = () => {
           )}
 
           {activeTab === 'notifications' && (
-            <SectionCard icon={<Bell size={18} className="text-indigo-300" />} title="Integration & Alerts">
+            <SectionCard icon={<Bell size={18} className="text-indigo-600" />} title="Tích hợp & cảnh báo">
               <form onSubmit={onSaveNotifications} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
@@ -700,7 +700,7 @@ export const Settings = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className={labelClassName}>Report Email</label>
+                    <label className={labelClassName}>Email nhận báo cáo</label>
                     <div className="relative">
                       <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input
@@ -708,12 +708,12 @@ export const Settings = () => {
                         value={notificationForm.reportEmail || ''}
                         onChange={event => setNotificationForm(prev => ({ ...prev, reportEmail: event.target.value }))}
                         className={`${inputClassName} pl-10`}
-                        placeholder="ops@storelens.vn"
+                        placeholder="ops@spacelens.vn"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className={labelClassName}>Report Time</label>
+                    <label className={labelClassName}>Giờ gửi báo cáo</label>
                     <input
                       type="time"
                       value={notificationForm.reportTime || '08:30'}
@@ -724,7 +724,7 @@ export const Settings = () => {
                 </div>
 
                 <div>
-                  <label className={labelClassName}>Report Days</label>
+                  <label className={labelClassName}>Ngày gửi báo cáo</label>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {DAY_OPTIONS.map(day => {
                       const active = notificationForm.reportDays?.includes(day);
@@ -736,7 +736,7 @@ export const Settings = () => {
                           className={`rounded-full px-3 py-1.5 text-xs border transition-colors ${
                             active
                               ? 'border-indigo-400/40 bg-indigo-500/25 text-indigo-100'
-                              : 'border-slate-600 text-slate-300 hover:bg-white/10'
+                              : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                           }`}
                         >
                           {day}
@@ -753,7 +753,7 @@ export const Settings = () => {
                     className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
                   >
                     <Save size={15} />
-                    {saving ? 'Saving...' : 'Save Notifications'}
+                    {saving ? 'Đang lưu...' : 'Lưu thông báo'}
                   </button>
                 </div>
               </form>
@@ -771,11 +771,11 @@ export const Settings = () => {
 
       <ConfirmationModal
         open={Boolean(confirmAction)}
-        title={confirmAction === 'reset-store' ? 'Reset Store Configuration?' : 'Reset System & Notifications?'}
+        title={confirmAction === 'reset-store' ? 'Đặt lại cấu hình cửa hàng?' : 'Đặt lại hệ thống và thông báo?'}
         description={
           confirmAction === 'reset-store'
-            ? 'This action will reset business information, working hours, and dwell threshold to defaults.'
-            : 'This action will reset API keys, AI sensitivity, theme toggles, and alert configuration to defaults.'
+            ? 'Thao tác này sẽ đặt lại thông tin doanh nghiệp, giờ làm việc và ngưỡng thời gian dừng về mặc định.'
+            : 'Thao tác này sẽ đặt lại API key, độ nhạy AI, các tùy chọn giao diện và cấu hình cảnh báo về mặc định.'
         }
         onCancel={() => setConfirmAction(null)}
         onConfirm={async () => {
@@ -786,7 +786,7 @@ export const Settings = () => {
           }
           setConfirmAction(null);
         }}
-        confirmLabel="Yes, Confirm"
+        confirmLabel="Đồng ý đặt lại"
       />
     </div>
   );

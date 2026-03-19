@@ -9,6 +9,8 @@ import {
 } from 'recharts';
 import { Users, TrendingUp, MoreHorizontal } from 'lucide-react';
 
+const PAGE_SIZE = 5;
+
 const MEMBER_SEGMENTS = [
   { name: 'Khách hàng thân thiết', value: 996, percent: 35, color: '#10b981' },
   { name: 'Khách hàng vàng lại', value: 1139, percent: 40, color: '#3b82f6' },
@@ -33,6 +35,18 @@ const MOCK_MEMBERS = [
   { id: 7, name: 'Do Khanh Linh', phone: '0956789012', segment: 'Tiềm năng', lastVisit: '12 giờ trước', visits30d: 11, dwellTime: '26 phút' },
   { id: 8, name: 'Vo Tuan Kiet', phone: '0967890123', segment: 'Nguy cơ rời đi', lastVisit: '6 ngày trước', visits30d: 2, dwellTime: '10 phút' }
 ];
+
+const tierFromVisits = visits => {
+  if (visits > 5) return 'Gold/VIP';
+  if (visits > 2) return 'Silver';
+  return 'New Member';
+};
+
+const tierClassName = {
+  'Gold/VIP': 'bg-amber-100 text-amber-700',
+  Silver: 'bg-slate-200 text-slate-700',
+  'New Member': 'bg-blue-100 text-blue-700'
+};
 
 const hashString = (value) => {
   let hash = 2166136261;
@@ -80,15 +94,31 @@ const buildDataset = ({ locationId, cameraId, date }) => {
 const cardClassName = 'rounded-2xl border border-slate-200 bg-white p-6 shadow-sm';
 
 /**
- * CustomerAnalysis - Dark-themed member analytics page with KPIs, segment chart, and member table.
+ * CustomerAnalysis - customer analytics page with segment chart and paginated member directory.
  */
 export const CustomerAnalysis = () => {
   const { locationId, cameraId, date } = useSelector(state => state.filter);
   const [data, setData] = useState(() => buildDataset({ locationId, cameraId, date }));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setData(buildDataset({ locationId, cameraId, date }));
   }, [locationId, cameraId, date]);
+
+  const enrichedMembers = MOCK_MEMBERS.map(member => ({
+    ...member,
+    tier: tierFromVisits(member.visits30d)
+  }));
+
+  const filteredMembers = enrichedMembers.filter(member =>
+    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.phone.includes(searchTerm)
+  );
+
+  const totalPages = Math.max(1, Math.ceil(filteredMembers.length / PAGE_SIZE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedMembers = filteredMembers.slice((safeCurrentPage - 1) * PAGE_SIZE, safeCurrentPage * PAGE_SIZE);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -194,6 +224,11 @@ export const CustomerAnalysis = () => {
             <input
               type="text"
               placeholder="Tìm kiếm theo tên..."
+              value={searchTerm}
+              onChange={event => {
+                setSearchTerm(event.target.value);
+                setCurrentPage(1);
+              }}
               className="rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none"
             />
           </div>
@@ -204,6 +239,7 @@ export const CustomerAnalysis = () => {
                 <tr className="border-b border-slate-200">
                   <th className="px-4 py-3 font-semibold text-slate-700">Hộ và tên</th>
                   <th className="px-4 py-3 font-semibold text-slate-700">Nhóm</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700">Tier</th>
                   <th className="px-4 py-3 font-semibold text-slate-700">Lần cuối</th>
                   <th className="px-4 py-3 font-semibold text-slate-700">Lượt/30d</th>
                   <th className="px-4 py-3 font-semibold text-slate-700">Dwell Time</th>
@@ -211,12 +247,17 @@ export const CustomerAnalysis = () => {
                 </tr>
               </thead>
               <tbody>
-                {MOCK_MEMBERS.map(member => (
+                {paginatedMembers.map(member => (
                   <tr key={member.id} className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3 text-slate-900">{member.name}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${SEGMENT_COLORS[member.segment]}`}>
                         {member.segment}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${tierClassName[member.tier]}`}>
+                        {member.tier}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-slate-600">{member.lastVisit}</td>
@@ -229,8 +270,39 @@ export const CustomerAnalysis = () => {
                     </td>
                   </tr>
                 ))}
+                {paginatedMembers.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-500">
+                      Không tìm thấy thành viên phù hợp.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              Hiển thị {(safeCurrentPage - 1) * PAGE_SIZE + (paginatedMembers.length > 0 ? 1 : 0)}-
+              {(safeCurrentPage - 1) * PAGE_SIZE + paginatedMembers.length} / {filteredMembers.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={safeCurrentPage === 1}
+                onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Trước
+              </button>
+              <span className="text-xs text-slate-600">Trang {safeCurrentPage}/{totalPages}</span>
+              <button
+                disabled={safeCurrentPage === totalPages}
+                onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Sau
+              </button>
+            </div>
           </div>
         </div>
       </div>

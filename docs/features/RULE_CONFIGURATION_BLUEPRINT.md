@@ -1,68 +1,62 @@
-StoreLens Blueprint: Rule Configuration System
-1. Functional Objective
-The Rule Configuration page allows store managers to define automation logic based on Edge AI insights and POS data. It transforms raw metrics into actionable business events.
+﻿# ðŸ› ï¸ SpaceLens Blueprint: Rule Configuration System UI Refactor
 
-Goal: Automate operations (e.g., notifying staff, flagging churn, tracking revenue goals).
+## 1. Objective
+Refactor the UI of the Rule Configuration page (`RuleConfiguration.jsx`) to match the **Professional Light Theme** established in the Dashboard. The goal is to improve visual hierarchy and input ergonomics without altering the existing state logic (`upG`, `upZ`, `upR`).
 
-Scope: Covers three main categories: Member Retention, Zone Performance, and Revenue Targets.
+## 2. Global Styling & Layout
+- **Container:** `bg-slate-50 min-h-screen p-6`.
+- **Typography:** Titles in `DM Sans` (text-slate-900), numeric units in `DM Mono` (text-slate-500).
+- **Section Headers:** Use a subtle subtle `uppercase tracking-widest text-xs font-semibold text-slate-500 mb-4`.
 
-2. Technical Stack Context
-Icons: lucide-react (Zap, Settings, Users, BarChart3, MapPin, etc.).
+## 3. UI Component Specifications (Replication Guide)
 
-Font: 'DM Sans' for UI, 'DM Mono' for numerical data.
+### A. Rule Cards (The Container)
+- **Style:** `bg-white border border-slate-200 rounded-2xl p-6 mb-6 relative overflow-hidden`.
+- **Color Coding (Left Border):** Add a 4px solid left border:
+    - **Retention:** `border-l-indigo-500`
+    - **Zones:** `border-l-teal-500`
+    - **Revenue:** `border-l-amber-500`
+- **Animations:** Apply `animate-fade-in-up` (Tailwind transition) for newly added rows.
 
-State Management: Local React useState for prototyping, intended for Redux persistence in production.
+### B. Input Primitives (The Controls)
+Refactor all standard inputs into these custom Tailwind-styled components:
+1. **SI (Standard Input):** `bg-slate-50 border-slate-200 rounded-lg text-slate-700 focus:ring-1 focus:ring-teal-500/50`.
+2. **SE (Custom Select):** Use a custom arrow icon. `appearance-none bg-slate-50 border-slate-200 rounded-lg px-4 py-2 pr-8`.
+3. **NL (Numeric with Suffix):** - Wrap in a `relative` div.
+    - Suffix (e.g., "ngÃ y", "â‚«"): `absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-mono`.
+    - Input: `pr-12` padding to avoid text overlap.
 
-Styling: Tailwind CSS (Current code uses inline CSS + Global Styles tag, convert to pure Tailwind for new components).
+### C. PrevRow (Natural Language Preview)
+- **Style:** A dedicated block at the bottom of each rule row.
+- **Visuals:** `mt-4 p-3 bg-slate-50/50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-400 italic`.
+- **Logic:** Must dynamically stringify the current row state (e.g., "If [Condition] then [Action]").
 
-3. Data Schema & Rule Types
-A. Global Retention Rules (Member Behavior)
-Logic: If customer violates check-in frequency -> Trigger Marketing Action.
+### D. Sticky Footer (Global Actions)
+- **Style:** `fixed bottom-0 right-0 left-sidebar-width bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 flex justify-between items-center z-50`.
+- **Left Side:** Active rule counter (`text-slate-400 text-sm`).
+- **Right Side:** Primary "Save Configuration" button (`bg-teal-600 hover:bg-teal-500`) and secondary "Cancel".
 
-Conditions: no_checkin (No visit), low_visit (Rare visit), no_pt_session (No personal training).
+---
 
-Actions: send_zalo, send_sms, alert_staff, flag_churn.
+## 4. Implementation Steps (Tasks for Copilot)
 
-B. Zone & Category Rules (Spatial Analytics)
-Logic: If Zone metric crosses threshold -> Trigger Operational Action.
+### Step 1: Component Refactor
+- Rewrite the `RuleRow` component for each category (Retention, Zone, Revenue).
+- Ensure the `onChange` events still call the original `upG`, `upZ`, `upR` functions. 
+- **CRITICAL:** Do not rename the state variables or modify the logic for adding/deleting IDs.
 
-Metrics: avg_duration (minutes), peak_count (people count), idle_time (wait time).
+### Step 2: Lucide Icon Integration
+- **Retention Section:** Use `Users`.
+- **Zone Section:** Use `MapPin`.
+- **Revenue Section:** Use `BarChart3`.
+- **Action Triggers:** Use `Zap` for notifications/alerts.
 
-Zones: Cardio, Weights, Yoga, Pool, Functional, Locker.
+### Step 3: Layout Spacing
+- Use a `flex flex-wrap items-center gap-4` for each rule row to ensure it wraps correctly on smaller screens.
+- Use a Trash icon (`lucide-react`) with `text-rose-500/50 hover:text-rose-500` for the delete action.
 
-Actions: alert_pt, notify_manager, redistribute (flow suggestion).
+---
 
-C. Revenue & Conversion Rules (Business Goals)
-Logic: If Revenue targets are not met -> Trigger Financial Alert.
-
-Metrics: daily_total, monthly_total, pt_sales, new_member_fee.
-
-Operators: >, <, >=, <=.
-
-4. UI Components to Replicate
-Card Layout: Use a vertical color-coded border on the left (Indigo for Retention, Teal for Zones, Amber for Revenue).
-
-Input Primitives:
-
-SI: Standard text input.
-
-SE: Custom select with arrow icon.
-
-NL: Numeric input with a unit suffix (e.g., "ngày", "phút", "₫") pinned to the right inside the input.
-
-Preview Row (PrevRow): A natural language sentence summary generated below each row (e.g., "If Zone Cardio Avg Duration > 45 mins -> Alert PT").
-
-Sticky Footer: A status bar displaying total active rules and global actions (Save/Cancel).
-
-5. Implementation Rules for Copilot
-Formatting: Format currency for Revenue using a short notation (e.g., 1e9 -> 1 tỷ).
-
-Dynamic Rows: Support adding/deleting rows in all three sections using unique IDs (Date.now()).
-
-Animations: Implement fadeUp entry animation for new rule rows.
-
-State Logic:
-
-upG, upZ, upR: Update functions for each specific rule type.
-
-Ensure all select options are mapped correctly from the provided constant arrays
+## 5. Development Constraints
+- Use strictly **Tailwind CSS**. Remove any remaining inline `<style>` tags or manual CSS strings.
+- Currency Display: For Revenue rules, ensure any displayed values use short notation (e.g., `10,000,000 â‚«`).

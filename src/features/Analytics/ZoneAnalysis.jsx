@@ -1,26 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { loadZoneData, setFilters, setPeriod } from '../../redux/slices/zoneAnalyticsSlice';
+import { loadZoneData, setPeriod } from '../../redux/slices/zoneAnalyticsSlice';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Users, Activity, Clock, CheckCircle, RotateCcw, TrendingUp, TrendingDown } from 'lucide-react';
-
-const FILTER_OPTIONS = {
-  regions: [
-    { id: 'north', name: 'Miền Bắc' },
-    { id: 'central', name: 'Miền Trung' },
-    { id: 'south', name: 'Miền Nam' }
-  ],
-  stores: [
-    { id: 'store-001', name: 'Cửa hàng Hà Nội', regionId: 'north' },
-    { id: 'store-002', name: 'Cửa hàng Đà Nẵng', regionId: 'central' },
-    { id: 'store-003', name: 'Cửa hàng TP.HCM', regionId: 'south' }
-  ],
-  cameras: [
-    { id: 'cam-all', name: 'Tất cả Camera' },
-    { id: 'cam-entrance', name: 'Camera Cổng chính' },
-    { id: 'cam-shelf-a', name: 'Camera Quầy kệ A' }
-  ]
-};
+import { Users, Activity, Clock, CheckCircle, TrendingUp, TrendingDown } from 'lucide-react';
 
 const cardClassName = 'rounded-2xl border border-slate-200 bg-white p-6 shadow-sm';
 
@@ -40,34 +22,7 @@ export const ZoneAnalysis = () => {
 
   useEffect(() => {
     dispatch(loadZoneData());
-  }, [dispatch, filters]);
-
-  const handleFilterChange = (key, value) => {
-    const nextFilters = { ...filters, [key]: value };
-    if (key === 'regionId') {
-      nextFilters.storeId = null;
-      nextFilters.cameraId = null;
-    }
-    if (key === 'storeId') {
-      nextFilters.cameraId = null;
-    }
-    dispatch(setFilters(nextFilters));
-  };
-
-  const handleReset = () => {
-    dispatch(setFilters({
-      regionId: null,
-      storeId: null,
-      cameraId: null,
-      date: new Date().toISOString().split('T')[0],
-      period: 'today'
-    }));
-    setSelectedZone('Tất cả khu vực');
-  };
-
-  const filteredStores = FILTER_OPTIONS.stores.filter(
-    store => !filters.regionId || store.regionId === filters.regionId
-  );
+  }, [dispatch]);
 
   const growthColorClass = value => (value >= 0 ? 'text-emerald-600' : 'text-red-600');
   const GrowthIcon = ({ value }) => (value >= 0
@@ -104,70 +59,6 @@ export const ZoneAnalysis = () => {
       <div className="mx-auto w-full max-w-7xl space-y-6">
         <div className={cardClassName}>
           <h1 className="mb-6 text-2xl font-bold text-slate-900">Phân tích khu vực</h1>
-
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="min-w-48 flex-1">
-              <label className="mb-2 block text-sm font-medium text-slate-700">Khu vực</label>
-              <select
-                value={filters.regionId || ''}
-                onChange={e => handleFilterChange('regionId', e.target.value || null)}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-              >
-                <option value="">Chọn khu vực</option>
-                {FILTER_OPTIONS.regions.map(region => (
-                  <option key={region.id} value={region.id}>{region.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="min-w-48 flex-1">
-              <label className="mb-2 block text-sm font-medium text-slate-700">Cửa hàng</label>
-              <select
-                value={filters.storeId || ''}
-                onChange={e => handleFilterChange('storeId', e.target.value || null)}
-                disabled={!filters.regionId}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 disabled:cursor-not-allowed disabled:bg-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-              >
-                <option value="">Chọn cửa hàng</option>
-                {filteredStores.map(store => (
-                  <option key={store.id} value={store.id}>{store.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="min-w-48 flex-1">
-              <label className="mb-2 block text-sm font-medium text-slate-700">Camera</label>
-              <select
-                value={filters.cameraId || ''}
-                onChange={e => handleFilterChange('cameraId', e.target.value || null)}
-                disabled={!filters.storeId}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 disabled:cursor-not-allowed disabled:bg-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-              >
-                <option value="">Chọn camera</option>
-                {FILTER_OPTIONS.cameras.map(camera => (
-                  <option key={camera.id} value={camera.id}>{camera.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="min-w-48 flex-1">
-              <label className="mb-2 block text-sm font-medium text-slate-700">Ngày</label>
-              <input
-                type="date"
-                value={filters.date}
-                onChange={e => handleFilterChange('date', e.target.value)}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-              />
-            </div>
-
-            <button
-              onClick={handleReset}
-              className="inline-flex items-center gap-2 rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
-            >
-              <RotateCcw size={14} />
-              Reset
-            </button>
-          </div>
         </div>
 
         <div className={cardClassName}>

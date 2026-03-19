@@ -243,7 +243,7 @@ export const CameraManager = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <button onClick={() => openPreview(camera)} className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100" aria-label="Preview camera">
+                        <button onClick={() => openPreview(camera)} className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100" aria-label="Xem truoc camera">
                           <CirclePlay size={15} />
                         </button>
                         <button onClick={() => openEditModal(camera)} className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100" aria-label="Edit camera">
@@ -264,38 +264,38 @@ export const CameraManager = () => {
         </div>
       </div>
 
-      {isFormOpen && <div className="fixed inset-0 bg-black/45 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl rounded-xl bg-slate-900/90 border border-white/20 shadow-2xl p-5 text-slate-100">
+      {isFormOpen && <div className="fixed inset-0 bg-black/35 z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-xl rounded-xl bg-white border border-slate-200 shadow-sm p-5 text-slate-900">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">{editingId ? 'Cap nhat camera' : 'Them camera moi'}</h2>
-              <button onClick={() => setIsFormOpen(false)} className="text-slate-300 hover:text-white">
+              <button onClick={() => setIsFormOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X size={20} />
               </button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-sm text-slate-300">Ten camera</label>
+                <label className="text-sm text-slate-700">Ten camera</label>
                 <input value={form.name} onChange={e => setForm(prev => ({
               ...prev,
               name: e.target.value
-            }))} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm" placeholder="VD: Camera cua ra vao" />
+            }))} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900" placeholder="VD: Camera cua ra vao" />
               </div>
 
               <div>
-                <label className="text-sm text-slate-300">RTSP URL</label>
+                <label className="text-sm text-slate-700">RTSP URL</label>
                 <input value={form.rtsp_url} onChange={e => setForm(prev => ({
               ...prev,
               rtsp_url: e.target.value
-            }))} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm" placeholder="rtsp://admin:password@192.168.x.x:554/..." />
+            }))} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900" placeholder="rtsp://admin:password@192.168.x.x:554/..." />
               </div>
 
               <div>
-                <label className="text-sm text-slate-300">Cua hang</label>
+                <label className="text-sm text-slate-700">Cua hang</label>
                 <select value={form.store_id} onChange={e => setForm(prev => ({
               ...prev,
               store_id: e.target.value
-            }))} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm">
+            }))} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900">
                   {stores.map(store => <option key={store.id} value={store.id}>
                       {store.name}
                     </option>)}
@@ -303,18 +303,18 @@ export const CameraManager = () => {
               </div>
 
               <div>
-                <label className="text-sm text-slate-300">Mo ta</label>
+                <label className="text-sm text-slate-700">Mo ta</label>
                 <textarea value={form.description} onChange={e => setForm(prev => ({
               ...prev,
               description: e.target.value
-            }))} rows={3} className="mt-1 w-full rounded-lg bg-slate-800 border border-slate-600 px-3 py-2 text-sm resize-none" placeholder="Mo ta ngan ve vai tro camera" />
+            }))} rows={3} className="mt-1 w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 resize-none" placeholder="Mo ta ngan ve vai tro camera" />
               </div>
 
               {formError && <p className="text-rose-300 text-sm">{formError}</p>}
             </div>
 
             <div className="mt-5 flex items-center justify-end gap-2">
-              <button onClick={() => setIsFormOpen(false)} className="px-4 py-2 rounded-lg border border-slate-500 text-slate-200 hover:bg-slate-800 text-sm">
+              <button onClick={() => setIsFormOpen(false)} className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-sm">
                 Huy
               </button>
               <button onClick={onSubmitForm} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium" style={{
@@ -330,7 +330,7 @@ export const CameraManager = () => {
           <div className="w-full max-w-2xl rounded-xl bg-white border border-slate-200 shadow-2xl overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">Preview camera</h3>
+                <h3 className="text-lg font-semibold text-slate-900">Xem truoc camera</h3>
                 <p className="text-sm text-slate-500">{selectedPreview.name}</p>
               </div>
               <button onClick={() => setIsPreviewOpen(false)} className="text-slate-500 hover:text-slate-700">
@@ -341,7 +341,7 @@ export const CameraManager = () => {
             <div className="p-5">
               <div className="rounded-xl border border-slate-200 bg-slate-100 h-[320px] flex flex-col items-center justify-center text-center">
                 <Video size={34} className="text-slate-500" />
-                <p className="mt-3 text-slate-700 font-medium">Snapshot Preview</p>
+                <p className="mt-3 text-slate-700 font-medium">Khung hinh xem truoc</p>
                 <p className="text-sm text-slate-500 mt-1">Ket noi endpoint Edge AI de hien thi frame moi nhat.</p>
               </div>
 

@@ -68,18 +68,16 @@ export const GlobalFilter = () => {
   };
 
   return (
-    <section className="sticky top-20 z-40">
-      <div className="rounded-2xl border border-slate-200 bg-slate-100/95 p-4 shadow-sm backdrop-blur-sm">
-        <div className="grid grid-cols-1 items-end gap-4 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <label className="mb-2 flex items-center gap-2 text-lg font-semibold text-slate-800">
-              <Store size={18} className="text-violet-500" />
-              Cửa hàng
-            </label>
+    <section className="mt-4 mb-4">
+      <div className="rounded-full border border-slate-200 bg-white/90 px-6 py-2 shadow-lg shadow-slate-100/50 backdrop-blur-md">
+        <div className="flex flex-wrap items-center gap-3 lg:gap-6">
+          <div className="flex items-center gap-2 shrink-0">
+            <Store size={16} className="text-teal-400" />
+            <span className="text-sm font-medium text-slate-700">Cửa hàng</span>
             <select
               value={locationId}
               onChange={handleLocationChange}
-              className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-base font-medium text-slate-700 outline-none transition focus:border-slate-400"
+              className="h-10 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 outline-none transition focus:border-teal-500"
             >
               {locations.map(location => (
                 <option key={location.id} value={location.id}>{location.label}</option>
@@ -87,15 +85,13 @@ export const GlobalFilter = () => {
             </select>
           </div>
 
-          <div className="lg:col-span-4">
-            <label className="mb-2 flex items-center gap-2 text-lg font-semibold text-slate-800">
-              <CalendarDays size={18} className="text-blue-500" />
-              Khoảng thời gian
-            </label>
+          <div className="flex items-center gap-2 shrink-0">
+            <CalendarDays size={16} className="text-blue-400" />
+            <span className="text-sm font-medium text-slate-700">Khoảng thời gian</span>
             <select
               value={selectedPreset}
               onChange={handleDatePresetChange}
-              className="h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-base font-medium text-slate-700 outline-none transition focus:border-slate-400"
+              className="h-10 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 outline-none transition focus:border-teal-500"
             >
               {datePresetOptions.map(option => (
                 <option key={option.id} value={option.id}>{option.label}</option>
@@ -103,30 +99,28 @@ export const GlobalFilter = () => {
             </select>
           </div>
 
-          <div className="lg:col-span-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <button
-                type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-violet-100 px-4 text-sm font-semibold text-violet-700 transition hover:bg-violet-200"
-              >
-                <Database size={17} />
-                Đồng bộ
-              </button>
-              <button
-                type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-orange-100 px-4 text-sm font-semibold text-orange-700 transition hover:bg-orange-200"
-              >
-                <Upload size={17} />
-                Import POS
-              </button>
-              <button
-                type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-emerald-100 px-4 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200"
-              >
-                <Download size={17} />
-                Xuất báo cáo
-              </button>
-            </div>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              <Database size={15} />
+              Đồng bộ
+            </button>
+            <button
+              type="button"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              <Upload size={15} />
+              Import POS
+            </button>
+            <button
+              type="button"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 text-xs font-semibold text-teal-700 transition hover:bg-teal-100"
+            >
+              <Download size={15} />
+              Xuất báo cáo
+            </button>
           </div>
         </div>
       </div>

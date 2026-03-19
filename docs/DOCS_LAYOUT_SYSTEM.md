@@ -1,8 +1,8 @@
-StoreLens UI Blueprint: Layout, Header & Footer
+﻿StoreLens UI Blueprint: Layout, Header & Footer
 1. Context & Design Vibe
 Objective: Create a seamless, high-tech dashboard container.
 
-Style: Glassmorphism (backdrop-blur), Dark theme primary (Indigo/Slate), sticky navigation, and smooth transitions using Framer Motion.
+Style: Glassmorphism (backdrop-blur), Light Theme primary (Indigo/Slate), sticky navigation, and smooth transitions using Framer Motion.
 
 Structure: MainLayout wraps all protected routes.
 
@@ -29,7 +29,7 @@ User Profile: Avatar with dropdown (Settings, Logout).
 Technical Requirements for Copilot:
 Use lucide-react for icons: LayoutDashboard, Flame, BarChart3, Settings, Camera.
 
-Style: sticky top-0 z-50 w-full border-b border-white/10 bg-slate-950/80 backdrop-blur-md.
+Style: sticky top-0 z-50 w-full border-b border-slate-200 bg-slate-50/80 backdrop-blur-md.
 
 Active Link State: Highlight the current path with a subtle bottom border or color change.
 
@@ -37,7 +37,7 @@ Active Link State: Highlight the current path with a subtle bottom border or col
 The Footer should be minimal and clean.
 
 Contents:
-Copyright: © 2026 StoreLens - C2SE.11 Team.
+Copyright: Â© 2026 StoreLens - C2SE.11 Team.
 
 System Version: v2.0 (Edge AI Optimized).
 
@@ -48,7 +48,7 @@ A functional wrapper that ensures consistency across all pages.
 
 Structure:
 JavaScript
-<div className="min-h-screen bg-slate-900 text-slate-100">
+<div className="min-h-screen bg-white text-slate-900">
   <Header />
   <main className="container mx-auto px-4 py-6">
     {/* Page Content goes here */}
@@ -62,3 +62,4 @@ State Check: Before rendering Header navigation, check auth.isAuthenticated from
 Responsive: On mobile, the Header navigation should collapse into a Hamburger menu.
 
 Animations: Use Framer Motion for the Header dropdowns (initial={{ opacity: 0, y: -10 }}).
+

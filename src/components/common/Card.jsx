@@ -9,7 +9,7 @@ export const Card = ({
   glassmorphism = true,
   onClick
 }) => {
-  const baseStyles = 'rounded-lg shadow-lg transition-all duration-300';
+  const baseStyles = 'rounded-lg shadow-sm transition-all duration-300';
   const glassStyles = glassmorphism ? 'bg-white/70 backdrop-blur-md border border-slate-200/80' : 'bg-white border border-slate-200';
   return <motion.div className={clsx(baseStyles, glassStyles, className, {
     'cursor-pointer hover:shadow-xl hover:scale-[1.02]': onClick

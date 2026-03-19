@@ -1,11 +1,11 @@
-# 🛠️ SpaceLens Blueprint: Asset Management Module
+﻿# ðŸ› ï¸ SpaceLens Blueprint: Asset Management Module
 
 ## 1. Objective
 Build the "Asset Management" page (`src/features/Settings/AssetManagement.jsx` or a standalone feature). This module manages the physical inventory within each zone (e.g., Exercise Machines, Product Racks, POS Terminals). It connects the physical asset to the database and defines its location for Heatmap/Zone Analysis.
 
 ## 2. UI/UX Standards (Consistent with Dashboard Vibe)
-- **Theme:** Dark Slate (`bg-slate-950`).
-- **Cards:** `bg-slate-900` with `border-slate-800` and `rounded-2xl`.
+- **Theme:** Dark Slate (`bg-slate-50`).
+- **Cards:** `bg-white` with `border-slate-200` and `rounded-2xl`.
 - **Interactions:** Use clear status badges (Active, Maintenance, Out of Stock).
 - **Icons:** `lucide-react` (Package, Tool, MapPin, Plus, Trash2, Edit).
 

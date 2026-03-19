@@ -1,51 +1,42 @@
-# 🛠️ SpaceLens Blueprint: Zone Assets Analysis (Refactored)
+# 🛠️ Zone Analysis Feature
 
 ## 1. Objective
-Refactor the "Top Assets in Zone" section to "Top Areas of Interest (AoI)". Since direct physical interaction with objects is not being measured, this section will now represent the **dwell time and foot traffic density** specifically at the coordinates where key assets (racks, displays, machines) are located.
+Provide real-time and historical analysis of customer movement, dwell time patterns, and zone performance across the store. Display key metrics, traffic trends, and movement paths for data-driven store optimization.
 
-## 2. Refactored Logic (Data Mapping)
-Instead of "Interactions," we will use **"Presence Density"**:
-- **Source Data:** `Heatmap` collection (`heatmap_matrix`).
-- **Logic:** We map the `(x, y)` coordinates of an Asset from the `Assets` table to the corresponding grid in the `heatmap_matrix`.
-- **Metric:** The value will now be **"Attention Score"** (Based on how long and how many people stayed at that specific asset's coordinate).
+## 2. Core Components
 
----
+### 2.1 Summary Cards
+Display key performance indicators:
+- **Total Daily Traffic**: Cumulative customer count for the day with growth percentage comparison
+- **Live Customers**: Current number of customers in-store with real-time growth trend
+- **Average Dwell Time**: Mean time customers spend in the store (in minutes)
+- **Zone Performance**: Overall store efficiency metric (as percentage)
 
-## 3. Implementation Steps (Tasks for AI Assistant)
+Each card includes:
+- Descriptive label and current value
+- Growth trend indicator (up/down arrow with percentage)
+- Color-coded metrics (blue for traffic, emerald for activity, amber for time, violet for performance)
 
-### Step 1: Update Table UI (`ZoneAnalysis.jsx`)
-Change the "Top Assets" table to **"Top Attraction Points (AoI)"**.
-- **Column 1: Asset/Point Name** (e.g., "Premium Rack A", "Promotion Table 1").
-- **Column 2: Attention Score** (Replace "Hits"). Use a scale of 0-100 or a duration (e.g., "12.5 hrs total").
-- **Column 3: Occupancy Rate** (Percentage of time this specific spot was occupied).
-- **Column 4: Status** (Use badges: `Hot Spot`, `Normal`, `Dead Spot`).
+### 2.2 Hourly Traffic Chart
+Interactive area chart showing traffic volume patterns across the day:
+- **X-Axis**: Hour of day (0-23)
+- **Y-Axis**: Customer count
+- **Toggle Options**: Today | Last 7 Days
+- **Visual**: Gradient area fill for emphasis
 
-### Step 2: Visual Representation
-- **Requirement:** Add a small "Mini-map" or a "Thumbnail" next to the table.
-- **Visual:** Use a simple SVG grid representing the zone. Highlight the coordinates of the Top 3 Assets with glowing pulses (matching the Dashboard's Emerald-400 theme).
+### 2.3 Movement Paths Section
+Displays customer navigation patterns between zones:
+- Shows "From Zone" → "To Zone" transitions
+- Includes confidence percentage for each path
+- Scrollable list for multiple paths
+- Uses border styling to highlight interesting patterns
 
----
-
-## 4. Why this Change? (Business Justification)
-- **Feasibility:** It uses existing `Heatmap` data which is already being collected by your AI.
-- **Accuracy:** It removes the need for complex "Hand-object interaction" AI models, focusing on reliable "Presence" data.
-- **Actionable Insight:** The manager still knows which display is effective. If "Rack A" has a high "Attention Score" but low sales in `BusinessEvents`, the product display might be attractive but the price is too high.
-
-## 5. Mock Data Structure (for Copilot)
-```javascript
-const topAoIData = [
-  { 
-    name: "Cardio Machine Group A", 
-    attentionScore: 92, 
-    avgStay: "18 mins", 
-    status: "Hot Spot",
-    color: "text-emerald-400" 
-  },
-  { 
-    name: "Supplement Display Shelf", 
-    attentionScore: 45, 
-    avgStay: "2 mins", 
-    status: "Dead Spot",
-    color: "text-rose-400" 
-  }
-];
+### 2.4 Zone Status Table
+Detailed breakdown of performance by individual zone:
+- **Zone**: Zone name (Entrance, Checkout, Discount Area, etc.)
+- **Sensor ID**: Unique identifier for the monitoring device
+- **Today Count**: Customer count for current day
+- **Change %**: Comparison with previous day (green for up, red for down)
+- **Live**: Current active customers in that zone
+- **Avg Dwell**: Average time spent in the zone
+- **Recommendation**: System suggestion badge (Normal, Open Counter, Promotion)
