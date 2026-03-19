@@ -1,26 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { loadHeatmapByRange, loadHeatmapData } from '../../redux/slices/heatmapSlice';
-const stores = [{
-  id: 'store-001',
-  name: 'Cửa hàng 1 - Trung tâm'
-}, {
-  id: 'store-002',
-  name: 'Cửa hàng 2 - Trung tâm thương mại'
-}, {
-  id: 'store-003',
-  name: 'Cửa hàng 3 - Sân bay'
-}];
-const cameras = [{
-  id: 'cam-001',
-  name: 'Góc rộng phía trước'
-}, {
-  id: 'cam-002',
-  name: 'Khu vực trung tâm'
-}, {
-  id: 'cam-003',
-  name: 'Khu vực thanh toán'
-}];
 const rois = [{
   id: 'roi-cardio',
   label: 'Cardio',
@@ -102,6 +82,7 @@ const fallbackSnapshot = createFallbackSnapshot();
  */
 export const Heatmap = () => {
   const dispatch = useAppDispatch();
+  const { cameraId, date } = useAppSelector(state => state.filter);
   const {
     data,
     loading,
@@ -109,8 +90,6 @@ export const Heatmap = () => {
   } = useAppSelector(state => state.heatmap);
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
-  const [selectedStore, setSelectedStore] = useState(stores[0].id);
-  const [selectedCamera, setSelectedCamera] = useState(cameras[0].id);
   const [radius, setRadius] = useState(70);
   const [opacity, setOpacity] = useState(0.72);
   const [timelinePercent, setTimelinePercent] = useState(100);
@@ -127,10 +106,11 @@ export const Heatmap = () => {
     acc[zone.id] = true;
     return acc;
   }, {}));
+  const effectiveCameraId = cameraId === 'cam_all' ? 'cam-001' : cameraId;
+
   useEffect(() => {
-    // Load heatmap data for default camera
-    dispatch(loadHeatmapData(selectedCamera));
-  }, [dispatch, selectedCamera]);
+    dispatch(loadHeatmapData(effectiveCameraId));
+  }, [dispatch, effectiveCameraId, date]);
   const drawHeatLayer = useCallback(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -193,7 +173,7 @@ export const Heatmap = () => {
   }, [fromTime, toTime, timelinePercent]);
   const handleApplyRange = () => {
     dispatch(loadHeatmapByRange({
-      cameraId: selectedCamera,
+      cameraId: effectiveCameraId,
       startDate: new Date(fromTime).toISOString(),
       endDate: new Date(toTime).toISOString()
     }));
@@ -218,22 +198,9 @@ export const Heatmap = () => {
           <p className="text-slate-500 text-sm mt-1">Phân tích khu vực nóng lạnh từ ảnh camera.</p>
         </div>
 
-        <div className="space-y-3">
-          <label className="block text-xs uppercase tracking-wide text-slate-500">Cửa hàng</label>
-          <select value={selectedStore} onChange={e => setSelectedStore(e.target.value)} className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-slate-900 text-sm">
-            {stores.map(store => <option key={store.id} value={store.id}>
-                {store.name}
-              </option>)}
-          </select>
-        </div>
-
-        <div className="space-y-3">
-          <label className="block text-xs uppercase tracking-wide text-slate-500">Camera</label>
-          <select value={selectedCamera} onChange={e => setSelectedCamera(e.target.value)} className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-slate-900 text-sm">
-            {cameras.map(camera => <option key={camera.id} value={camera.id}>
-                {camera.name}
-              </option>)}
-          </select>
+        <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
+          <p className="text-xs uppercase tracking-wide text-blue-600">Camera từ bộ lọc toàn cục</p>
+          <p className="text-sm font-medium text-blue-900 mt-1">{effectiveCameraId}</p>
         </div>
 
         <div className="space-y-3">

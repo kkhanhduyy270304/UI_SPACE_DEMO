@@ -1,155 +1,314 @@
-import { Card } from '../../components/common';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Clock, TrendingUp, Users } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts';
+import { Activity, Clock, Timer, TrendingDown, TrendingUp, UserCheck } from 'lucide-react';
 
-// Mock data for dwell time analysis
-const dwellTimeData = [
-  { zone: 'Lối vào chính', avgDwellTime: 2.5, visitors: 450 },
-  { zone: 'Quầy thanh toán', avgDwellTime: 5.2, visitors: 380 },
-  { zone: 'Khu vực giảm giá', avgDwellTime: 8.3, visitors: 320 },
-  { zone: 'Mỹ phẩm cao cấp', avgDwellTime: 12.1, visitors: 210 },
-  { zone: 'Đồ chơi trẻ em', avgDwellTime: 7.8, visitors: 180 },
-  { zone: 'Nội thất lớn', avgDwellTime: 15.4, visitors: 95 },
+const BASE_ZONES = [
+  'Entrance Display',
+  'Perfume Zone',
+  'Checkout Area',
+  'Promotional Shelf',
+  'Premium Cosmetics',
+  'Kids Corner'
 ];
 
-const hourlyDwellTime = [
-  { hour: '08:00', avgDwell: 3.2 },
-  { hour: '10:00', avgDwell: 6.5 },
-  { hour: '12:00', avgDwell: 8.2 },
-  { hour: '14:00', avgDwell: 7.9 },
-  { hour: '16:00', avgDwell: 9.1 },
-  { hour: '18:00', avgDwell: 10.3 },
-  { hour: '20:00', avgDwell: 6.8 },
-  { hour: '22:00', avgDwell: 4.2 },
+const DWELL_BUCKETS = [
+  { bucket: '0-5 min', midpoint: 2.5 },
+  { bucket: '5-15 min', midpoint: 10 },
+  { bucket: '15-30 min', midpoint: 22.5 },
+  { bucket: '30+ min', midpoint: 40 }
 ];
+
+const hashString = (value) => {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash +=
+      (hash << 1) +
+      (hash << 4) +
+      (hash << 7) +
+      (hash << 8) +
+      (hash << 24);
+  }
+  return hash >>> 0;
+};
+
+const createRng = (seed) => {
+  let state = seed;
+  return () => {
+    state += 0x6d2b79f5;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const createDwellDataset = ({ locationId, cameraId, date }) => {
+  const seed = hashString(`${locationId}|${cameraId}|${date}`);
+  const rng = createRng(seed);
+
+  const totalSessions = 900 + Math.floor(rng() * 700);
+  const distribution = [
+    0.27 + rng() * 0.08,
+    0.32 + rng() * 0.07,
+    0.23 + rng() * 0.06,
+    0.13 + rng() * 0.06
+  ];
+  const sumDistribution = distribution.reduce((acc, value) => acc + value, 0);
+  const normalized = distribution.map(value => value / sumDistribution);
+
+  const distributionData = DWELL_BUCKETS.map((bucket, index) => ({
+    bucket: bucket.bucket,
+    visitors: index === DWELL_BUCKETS.length - 1
+      ? totalSessions
+      : Math.floor(totalSessions * normalized[index])
+  }));
+  const distributionSumExceptLast = distributionData
+    .slice(0, DWELL_BUCKETS.length - 1)
+    .reduce((acc, item) => acc + item.visitors, 0);
+  distributionData[DWELL_BUCKETS.length - 1].visitors = totalSessions - distributionSumExceptLast;
+
+  const avgStoreDwell = distributionData.reduce((acc, item, index) => {
+    return acc + item.visitors * DWELL_BUCKETS[index].midpoint;
+  }, 0) / totalSessions;
+
+  const hourlyData = [];
+  for (let hour = 8; hour <= 22; hour += 2) {
+    const daytimeBoost = hour >= 16 && hour <= 20 ? 1.25 : hour >= 10 && hour < 16 ? 1.1 : 0.9;
+    const avgDwell = (7 + rng() * 6) * daytimeBoost;
+    hourlyData.push({
+      hour: `${String(hour).padStart(2, '0')}:00`,
+      avgMinutes: Number(avgDwell.toFixed(1))
+    });
+  }
+
+  const zoneRanking = BASE_ZONES.map((zoneName, index) => {
+    const avgMinutes = Number((8 + rng() * 28).toFixed(1));
+    const trendRoll = rng();
+    const trend = trendRoll > 0.66 ? 'up' : trendRoll < 0.33 ? 'down' : 'flat';
+    const trendDelta = Number((rng() * 12).toFixed(1));
+    const status = avgMinutes >= 25 ? 'High' : avgMinutes >= 14 ? 'Normal' : 'Low';
+
+    return {
+      rank: index + 1,
+      zoneName,
+      avgMinutes,
+      trend,
+      trendDelta,
+      status
+    };
+  }).sort((a, b) => b.avgMinutes - a.avgMinutes).map((item, index) => ({
+    ...item,
+    rank: index + 1
+  }));
+
+  const peakZoneDwell = zoneRanking[0]?.avgMinutes || 0;
+  const highEngagementSessions = distributionData[2].visitors + distributionData[3].visitors;
+  const highEngagementRatio = (highEngagementSessions / totalSessions) * 100;
+
+  return {
+    kpis: {
+      avgStoreDwell,
+      peakZoneDwell,
+      highEngagementRatio,
+      totalSessions
+    },
+    distributionData,
+    hourlyData,
+    zoneRanking
+  };
+};
+
+const trendView = (trend) => {
+  if (trend === 'up') {
+    return {
+      icon: <TrendingUp size={15} className="text-emerald-400" />,
+      label: 'Tăng',
+      textClass: 'text-emerald-400'
+    };
+  }
+  if (trend === 'down') {
+    return {
+      icon: <TrendingDown size={15} className="text-rose-400" />,
+      label: 'Giảm',
+      textClass: 'text-rose-400'
+    };
+  }
+  return {
+    icon: <Activity size={15} className="text-slate-400" />,
+    label: 'Ổn định',
+    textClass: 'text-slate-400'
+  };
+};
+
+const statusClass = {
+  High: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+  Normal: 'bg-amber-100 text-amber-700 border border-amber-200',
+  Low: 'bg-slate-100 text-slate-700 border border-slate-200'
+};
 
 /**
- * DwellTimeAnalysis - Analyzes how long customers stay in different zones
+ * DwellTimeAnalysis - Analyze customer engagement duration across zones.
  */
 export const DwellTimeAnalysis = () => {
+  const { locationId, cameraId, date } = useSelector(state => state.filter);
+  const [analyticsData, setAnalyticsData] = useState(() => createDwellDataset({ locationId, cameraId, date }));
+
+  useEffect(() => {
+    setAnalyticsData(createDwellDataset({ locationId, cameraId, date }));
+  }, [locationId, cameraId, date]);
+
+  const kpiCards = useMemo(() => ([
+    {
+      title: 'Average Store Dwell Time',
+      value: `${analyticsData.kpis.avgStoreDwell.toFixed(1)} mins`,
+      icon: <Clock className="h-5 w-5 text-teal-600" />
+    },
+    {
+      title: 'Peak Zone Dwell Time',
+      value: `${analyticsData.kpis.peakZoneDwell.toFixed(1)} mins`,
+      icon: <Timer className="h-5 w-5 text-indigo-600" />
+    },
+    {
+      title: 'High Engagement Ratio',
+      value: `${analyticsData.kpis.highEngagementRatio.toFixed(1)}%`,
+      icon: <UserCheck className="h-5 w-5 text-teal-600" />
+    },
+    {
+      title: 'Total Tracked Sessions',
+      value: analyticsData.kpis.totalSessions.toLocaleString('en-US'),
+      icon: <Activity className="h-5 w-5 text-indigo-600" />
+    }
+  ]), [analyticsData]);
+
   return (
-    <div className="min-h-screen bg-[#F8F9FA] p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Phân tích thời gian dừng</h1>
-          <p className="text-gray-600">Phân tích thời gian khách hàng dừng lại tại các khu vực khác nhau</p>
+    <div className="min-h-screen rounded-2xl bg-white p-6">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Dwell Time Analytics</h1>
+          <p className="mt-2 text-sm text-slate-600">Analyze customer engagement duration across zones.</p>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 bg-white rounded-xl shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Clock className="w-6 h-6 text-blue-600" />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {kpiCards.map(card => (
+            <div key={card.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="rounded-xl bg-slate-100 p-3">{card.icon}</span>
               </div>
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Thời gian dừng trung bình</p>
-                <p className="text-3xl font-bold text-gray-900">8.6 phút</p>
-              </div>
+              <p className="mt-4 text-sm text-slate-500">{card.title}</p>
+              <p className="mt-2 text-3xl font-bold text-slate-900">{card.value}</p>
             </div>
-          </Card>
-
-          <Card className="p-6 bg-white rounded-xl shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <Users className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Khách đã phân tích</p>
-                <p className="text-3xl font-bold text-gray-900">1,635</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-white rounded-xl shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Khu vực nóng nhất</p>
-                <p className="text-3xl font-bold text-gray-900">Nội thất lớn</p>
-              </div>
-            </div>
-          </Card>
+          ))}
         </div>
 
-        {/* Average Dwell Time by Zone */}
-        <Card className="p-6 bg-white rounded-xl shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Thời gian dừng trung bình theo khu vực</h2>
-          <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dwellTimeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="zone" angle={-45} textAnchor="end" height={100} />
-                <YAxis yAxisId="left" label={{ value: 'Thời gian (phút)', angle: -90, position: 'insideLeft' }} />
-                <YAxis yAxisId="right" orientation="right" label={{ value: 'Số khách', angle: 90, position: 'insideRight' }} />
-                <Tooltip />
-                <Legend />
-                <Bar yAxisId="left" dataKey="avgDwellTime" fill="#3B82F6" name="Thời gian dừng (phút)" />
-                <Bar yAxisId="right" dataKey="visitors" fill="#10B981" name="Số khách" />
-              </BarChart>
-            </ResponsiveContainer>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Dwell Time Distribution</h2>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analyticsData.distributionData} margin={{ top: 16, right: 14, left: -20, bottom: 6 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="bucket" stroke="#64748b" tick={{ fontSize: 12 }} />
+                  <YAxis stroke="#64748b" tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '10px',
+                      color: '#0f172a'
+                    }}
+                    cursor={{ fill: '#f1f5f9' }}
+                  />
+                  <Bar dataKey="visitors" fill="#2dd4bf" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </Card>
 
-        {/* Hourly Dwell Time Trend */}
-        <Card className="p-6 bg-white rounded-xl shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Xu hướng thời gian dừng theo giờ</h2>
-          <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={hourlyDwellTime}>
-                <defs>
-                  <linearGradient id="colorDwell" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.1}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="hour" />
-                <YAxis label={{ value: 'Thời gian (phút)', angle: -90, position: 'insideLeft' }} />
-                <Tooltip formatter={(value) => `${value} phút`} />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="avgDwell" 
-                  stroke="#F59E0B" 
-                  strokeWidth={2}
-                  name="Thời gian dừng trung bình"
-                  dot={{ fill: '#F59E0B', r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Average Dwell Time by Hour</h2>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={analyticsData.hourlyData} margin={{ top: 16, right: 14, left: -20, bottom: 6 }}>
+                  <defs>
+                    <linearGradient id="dwellGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#818cf8" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#818cf8" stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="hour" stroke="#64748b" tick={{ fontSize: 12 }} />
+                  <YAxis stroke="#64748b" tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    formatter={value => [`${value} mins`, 'Avg dwell']}
+                    contentStyle={{
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '10px',
+                      color: '#0f172a'
+                    }}
+                    cursor={{ fill: '#f1f5f9' }}
+                  />
+                  <Area type="monotone" dataKey="avgMinutes" stroke="#818cf8" strokeWidth={2} fill="url(#dwellGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Summary Table */}
-        <Card className="p-6 bg-white rounded-xl shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Chi tiết theo khu vực</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Khu vực</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-700">Thời gian dừng (phút)</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-700">Số khách</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-700">Tỷ lệ (%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dwellTimeData.map((row, idx) => (
-                  <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4">{row.zone}</td>
-                    <td className="py-3 px-4 text-right font-medium">{row.avgDwellTime}</td>
-                    <td className="py-3 px-4 text-right">{row.visitors}</td>
-                    <td className="py-3 px-4 text-right">{((row.visitors / 1635) * 100).toFixed(1)}%</td>
+        <div className="grid grid-cols-1 gap-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Zone Engagement Ranking</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[680px] text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                    <th className="px-3 py-3 font-medium">Rank</th>
+                    <th className="px-3 py-3 font-medium">Zone Name</th>
+                    <th className="px-3 py-3 font-medium text-right">Avg Dwell Time</th>
+                    <th className="px-3 py-3 font-medium text-right">Trend</th>
+                    <th className="px-3 py-3 font-medium text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {analyticsData.zoneRanking.map(zone => {
+                    const trend = trendView(zone.trend);
+
+                    return (
+                      <tr key={zone.zoneName} className="border-b border-slate-200 text-slate-700">
+                        <td className="px-3 py-3 font-mono text-slate-800">#{zone.rank}</td>
+                        <td className="px-3 py-3 font-medium text-slate-800">{zone.zoneName}</td>
+                        <td className="px-3 py-3 text-right font-mono text-slate-900">{zone.avgMinutes.toFixed(1)} mins</td>
+                        <td className="px-3 py-3">
+                          <div className={`flex items-center justify-end gap-2 ${trend.textClass}`}>
+                            {trend.icon}
+                            <span className="font-medium">{trend.label} {zone.trendDelta}%</span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-3 text-right">
+                          <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass[zone.status]}`}>
+                            {zone.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
