@@ -6,6 +6,7 @@ import settingsReducer from '../slices/settingsSlice';
 import zoneReducer from '../slices/zoneSlice';
 import zoneAnalyticsReducer from '../slices/zoneAnalyticsSlice';
 import customerReducer from '../slices/customerSlice';
+import filterReducer from '../slices/filterSlice';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -14,7 +15,8 @@ export const store = configureStore({
     settings: settingsReducer,
     zone: zoneReducer,
     zoneAnalytics: zoneAnalyticsReducer,
-    customer: customerReducer
+    customer: customerReducer,
+    filter: filterReducer
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware({
     serializableCheck: false

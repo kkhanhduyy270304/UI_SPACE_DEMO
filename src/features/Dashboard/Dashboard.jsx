@@ -1,292 +1,287 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { loadDashboardData, setFilters } from '../../redux/slices/dashboardSlice';
+import { loadDashboardData } from '../../redux/slices/dashboardSlice';
 import { Card } from '../../components/common';
 import { formatNumber, formatPercentage } from '../../utils/formatters';
-import { Users, UserCheck, TrendingUp, RotateCcw, DollarSign } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { Users, DollarSign, TrendingUp, Activity, BarChart3 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
 /**
  * Dashboard page - displays global KPIs with filters and analytics
  */
 export const Dashboard = () => {
   const dispatch = useAppDispatch();
+  const { locationId, cameraId, date } = useAppSelector(state => state.filter);
   const {
     summary,
     hourlyData,
     revenueData,
     zoneRankingData,
     loading,
-    error,
-    filters
+    error
   } = useAppSelector(state => state.dashboard);
 
-  const [regions] = useState([
-    { id: 'north', name: 'Miền Bắc' },
-    { id: 'central', name: 'Miền Trung' },
-    { id: 'south', name: 'Miền Nam' }
-  ]);
-
-  const [stores] = useState([
-    { id: 'store-001', name: 'Cửa hàng Hà Nội', regionId: 'north' },
-    { id: 'store-002', name: 'Cửa hàng Đà Nẵng', regionId: 'central' },
-    { id: 'store-003', name: 'Cửa hàng TP.HCM', regionId: 'south' }
-  ]);
-
-  const [cameras] = useState([
-    { id: 'cam-all', name: 'Tất cả Camera' },
-    { id: 'cam-entrance', name: 'Camera Cổng chính' },
-    { id: 'cam-shelf-a', name: 'Camera Quầy kệ A' }
-  ]);
-
   useEffect(() => {
-    dispatch(loadDashboardData(filters));
-  }, [dispatch, filters]);
-
-  const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
-    if (key === 'regionId') {
-      newFilters.storeId = null;
-      newFilters.cameraId = null;
-    } else if (key === 'storeId') {
-      newFilters.cameraId = null;
-    }
-    dispatch(setFilters(newFilters));
-  };
-
-  const handleReset = () => {
-    const defaultFilters = {
-      regionId: null,
-      storeId: null,
-      cameraId: null,
-      date: new Date().toISOString().split('T')[0]
-    };
-    dispatch(setFilters(defaultFilters));
-  };
-
-  const filteredStores = stores.filter(store => !filters.regionId || store.regionId === filters.regionId);
+    dispatch(loadDashboardData({ locationId, cameraId, date }));
+  }, [dispatch, locationId, cameraId, date]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <p className="text-gray-600 text-xl">Đang tải dữ liệu tổng quan...</p>
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <p className="text-gray-600 text-xl">Đang tải dữ liệu...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <p className="text-red-500 text-xl">Lỗi: {error}</p>
       </div>
     );
   }
 
+  // ============================================================================
+  // STEP 0: Dashboard Container Setup (Dark Theme - bg-slate-950)
+  // ============================================================================
   return (
-    <div className="min-h-screen bg-[#F8F9FA] p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Bảng điều khiển phân tích cửa hàng</h1>
+    <div className="min-h-screen bg-white">
+      <div className="w-full space-y-6">
+        
 
-          {/* Filter Bar */}
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="flex-1 min-w-48">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Khu vực</label>
-              <select
-                value={filters.regionId || ''}
-                onChange={(e) => handleFilterChange('regionId', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Chọn khu vực</option>
-                {regions.map(region => (
-                  <option key={region.id} value={region.id}>{region.name}</option>
-                ))}
-              </select>
+        {/* ======================================================================
+            STEP 1: Layout Row 1 - Analysis & Real-time Status (Split Bar)
+            grid grid-cols-5 gap-6 mb-6
+            ====================================================================== */}
+        {summary && (
+          <div className="grid grid-cols-5 gap-6 mb-6">
+            {/* 1.1: Standard KPI Cards (Left 3/5 Columns) */}
+            <div className="col-span-3 grid grid-cols-3 gap-3">
+              {/* KPI 1: Total Revenue */}
+              <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-gray-600 text-xs font-medium uppercase tracking-wider">Tổng Doanh Thu</p>
+                    <p className="text-gray-900 text-4xl font-bold mt-1 font-mono">
+                      {(summary.total_revenue / 1000000).toFixed(1)}M
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-amber-500/20 rounded-lg">
+                    <DollarSign className="w-5 h-5 text-amber-400" />
+                  </div>
+                </div>
+              </div>
+
+              {/* KPI 2: Total Visitors */}
+              <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-gray-600 text-xs font-medium uppercase tracking-wider">Tổng Khách Hàng</p>
+                    <p className="text-gray-900 text-4xl font-bold mt-1 font-mono">
+                      {formatNumber(summary.total_people_count)}
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-teal-500/20 rounded-lg">
+                    <Users className="w-5 h-5 text-teal-400" />
+                  </div>
+                </div>
+              </div>
+
+              {/* KPI 3: Conversion Rate */}
+              <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-gray-600 text-xs font-medium uppercase tracking-wider">Tỷ Lệ Chuyển Đổi</p>
+                    <p className="text-gray-900 text-4xl font-bold mt-1 font-mono">
+                      {formatPercentage(summary.conversion_rate)}
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-emerald-500/20 rounded-lg">
+                    <TrendingUp className="w-5 h-5 text-emerald-400" />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="flex-1 min-w-48">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cửa hàng</label>
-              <select
-                value={filters.storeId || ''}
-                onChange={(e) => handleFilterChange('storeId', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                disabled={!filters.regionId}
-              >
-                <option value="">Chọn cửa hàng</option>
-                {filteredStores.map(store => (
-                  <option key={store.id} value={store.id}>{store.name}</option>
-                ))}
-              </select>
-            </div>
+            {/* 1.2: Real-time Status Card (Right 2/5 Columns) */}
+            <div className="col-span-2 rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
+              <div className="space-y-6">
+                {/* Live Indicator with Pulsing Effect */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="relative w-2.5 h-2.5">
+                    <div className="absolute inset-0 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 bg-emerald-500 rounded-full"></div>
+                  </div>
+                  <span className="text-emerald-600 text-xs font-semibold uppercase tracking-widest">Live</span>
+                </div>
 
-            <div className="flex-1 min-w-48">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Camera</label>
-              <select
-                value={filters.cameraId || ''}
-                onChange={(e) => handleFilterChange('cameraId', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                disabled={!filters.storeId}
-              >
-                <option value="">Chọn camera</option>
-                {cameras.map(camera => (
-                  <option key={camera.id} value={camera.id}>{camera.name}</option>
-                ))}
-              </select>
-            </div>
+                {/* Visitors Currently Inside */}
+                <div className="mb-4">
+                  <p className="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">
+                    Khách Hiện Tại Trong Cửa Hàng
+                  </p>
+                  <p className="text-gray-900 text-5xl font-bold font-mono">
+                    {formatNumber(summary.live_occupancy)}
+                  </p>
+                  <p className="text-gray-500 text-xs mt-1">
+                    Cập nhật {new Date().toLocaleTimeString('vi-VN')}
+                  </p>
+                </div>
 
-            <div className="flex-1 min-w-48">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ngày</label>
-              <input
-                type="date"
-                value={filters.date}
-                onChange={(e) => handleFilterChange('date', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+                {/* Waiting in Queue */}
+                <div>
+                  <p className="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">
+                    Chờ Tại Quầy
+                  </p>
+                  <p className="text-gray-900 text-3xl font-bold font-mono">
+                    {summary.queue_length || 0}
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
+        )}
 
-            <div className="flex-shrink-0">
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center gap-2"
-              >
-                <RotateCcw size={16} />
-                Reset
-              </button>
+        {/* ======================================================================
+            STEP 2: Layout Row 2 - Deep Dive Charts
+            grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6
+            ====================================================================== */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* 2.1: Hourly Visitor Traffic Chart (Left) */}
+          <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
+            <h2 className="text-gray-900 text-lg font-semibold mb-4">Lưu Lượng Khách Theo Giờ</h2>
+            <div className="h-[240px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={hourlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorTeal" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#14B8A6" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#14B8A6" stopOpacity={0.05}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="hour" stroke="#6B7280" style={{ fontSize: '12px' }} />
+                  <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '8px' }}
+                    labelStyle={{ color: '#374151' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#14B8A6"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorTeal)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* 2.2: Daily Revenue Chart (Right) */}
+          <div className="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+            <h2 className="text-white text-lg font-semibold mb-4">Doanh Thu Theo Ngày (7 Ngày Gần Đây)</h2>
+            <div className="h-[240px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="day" stroke="#6B7280" style={{ fontSize: '12px' }} />
+                  <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '8px' }}
+                    labelStyle={{ color: '#374151' }}
+                    formatter={(value) => `${(value / 1000000).toFixed(2)}M`}
+                  />
+                  <Bar 
+                    dataKey="revenue" 
+                    fill="#FBBF24" 
+                    radius={[8, 8, 0, 0]}
+                    opacity={0.9}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        {/* KPI Cards */}
-        {summary && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="p-6 bg-white rounded-xl shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-orange-100 rounded-lg">
-                  <DollarSign className="w-6 h-6 text-orange-600" />
-                </div>
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">Tổng doanh thu</p>
-                  <p className="text-2xl font-bold text-gray-900">{(summary.total_revenue / 1000000).toFixed(1)}M</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-white rounded-xl shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <Users className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">Khách trong ngày</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(summary.total_people_count)}</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-white rounded-xl shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <UserCheck className="w-6 h-6 text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-gray-600 text-sm font-medium">Khách hiện tại</p>
-                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Live</span>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{formatNumber(summary.live_occupancy)}</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-white rounded-xl shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-100 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">Tỷ lệ chuyển đổi</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatPercentage(summary.conversion_rate)}</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Analytics Chart */}
-        <Card className="p-6 bg-white rounded-xl shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Lưu lượng khách theo giờ</h2>
-          <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={hourlyData}>
-                <defs>
-                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="hour" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#3B82F6"
-                  fillOpacity={1}
-                  fill="url(#colorCount)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        {/* Revenue & Zone Rankings Section (2 columns) */}
+        {/* ======================================================================
+            STEP 3: Layout Row 3 - Zone Performance Tables
+            grid grid-cols-1 lg:grid-cols-2 gap-6
+            ====================================================================== */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Revenue Chart */}
-          <Card className="p-6 bg-white rounded-xl shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Doanh thu theo ngày</h2>
-            <div className="h-[350px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `${(value / 1000000).toFixed(1)}M`} />
-                  <Bar dataKey="revenue" fill="#10B981" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
-          {/* Zone Rankings */}
-          <Card className="p-6 bg-white rounded-xl shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Xếp hạng khu vực theo lưu lượng</h2>
-            <div className="space-y-3 max-h-[350px] overflow-y-auto">
-              {zoneRankingData && zoneRankingData.map((zone) => {
-                const statusColorMap = {
-                  red: 'bg-red-100 text-red-800',
-                  orange: 'bg-orange-100 text-orange-800',
-                  yellow: 'bg-yellow-100 text-yellow-800',
-                  blue: 'bg-blue-100 text-blue-800',
-                  cyan: 'bg-cyan-100 text-cyan-800',
-                  indigo: 'bg-indigo-100 text-indigo-800'
-                };
-                
-                return (
-                  <div key={zone.rank} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-bold text-gray-500 w-6"># {zone.rank}</span>
-                      <span className="text-sm font-medium text-gray-900">{zone.name}</span>
+          {/* 3.1: Top Zones Ranking by Traffic (Left) */}
+          <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
+            <h2 className="text-gray-900 text-lg font-semibold mb-4">Các Khu Vực Hàng Đầu Theo Lưu Lượng</h2>
+            <div className="space-y-0 max-h-[320px] overflow-y-auto">
+              {zoneRankingData && zoneRankingData.length > 0 ? (
+                zoneRankingData.map((zone, index) => (
+                  <div
+                    key={zone.rank || index}
+                    className="flex items-center justify-between py-3 px-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition"
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-gray-500 text-sm font-mono w-6">#{zone.rank}</span>
+                      <div>
+                        <p className="text-gray-900 font-medium">{zone.name}</p>
+                        <p className="text-gray-500 text-xs">Lưu lượng: {formatNumber(zone.traffic)}</p>
+                      </div>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColorMap[zone.statusColor] || 'bg-gray-100 text-gray-800'}`}>
-                      {zone.status}
-                    </span>
+                    <div className="text-right">
+                      <p className="text-teal-600 text-lg font-bold font-mono">{zone.traffic}</p>
+                      <p className="text-gray-500 text-xs">người</p>
+                    </div>
                   </div>
-                );
-              })}
+                ))
+              ) : (
+                <p className="text-slate-400 text-sm py-8 text-center">Không có dữ liệu</p>
+              )}
             </div>
-          </Card>
+          </div>
+
+          {/* 3.2: Detailed Zone Performance Metrics (Right) */}
+          <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
+            <h2 className="text-gray-900 text-lg font-semibold mb-4">Chi Tiết Hiệu Suất Khu Vực</h2>
+            <div className="space-y-0 max-h-[320px] overflow-y-auto">
+              {zoneRankingData && zoneRankingData.length > 0 ? (
+                zoneRankingData.map((zone, index) => {
+                  // Mock performance data for display
+                  const avgDwellTime = Math.floor(Math.random() * 20) + 5; // 5-25 minutes
+                  const staffHits = Math.floor(Math.random() * 50) + 10;
+                  const conversionRatio = Math.floor(Math.random() * 40) + 10; // 10-50%
+                  const performance = conversionRatio > 30 ? 'high' : conversionRatio > 20 ? 'medium' : 'low';
+                  const perfColor = performance === 'high' ? 'bg-emerald-500' : performance === 'medium' ? 'bg-amber-500' : 'bg-slate-600';
+
+                  return (
+                    <div key={zone.rank || index} className="py-3 px-3 border-b border-gray-200 last:border-b-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-gray-900 font-medium text-sm">{zone.name}</p>
+                        <div className={`w-2 h-2 rounded-full ${perfColor}`}></div>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Thời gian dừng</span>
+                          <span className="text-gray-900 font-mono">{avgDwellTime} phút</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Tỷ lệ chuyển đổi</span>
+                          <span className="text-amber-600 font-mono">{conversionRatio}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-1 mt-1.5 overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full ${perfColor}`}
+                            style={{ width: `${conversionRatio}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-slate-400 text-sm py-8 text-center">Không có dữ liệu</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

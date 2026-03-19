@@ -3,6 +3,7 @@ const MOCK_DATA = {
     total_revenue: 25000000,
     total_people_count: 1284,
     live_occupancy: 42,
+    queue_length: 8,
     conversion_rate: 12.5
   },
   hourlyData: [
@@ -16,22 +17,22 @@ const MOCK_DATA = {
     { hour: '22:00', count: 210 },
   ],
   revenueData: [
-    { day: 'T2', revenue: 2500000 },
-    { day: 'T3', revenue: 2800000 },
-    { day: 'T4', revenue: 2200000 },
-    { day: 'T5', revenue: 3100000 },
-    { day: 'T6', revenue: 3500000 },
-    { day: 'T7', revenue: 4200000 },
-    { day: 'CN', revenue: 5600000 },
+    { day: '12 Mar', revenue: 2500000 },
+    { day: '13 Mar', revenue: 2800000 },
+    { day: '14 Mar', revenue: 2200000 },
+    { day: '15 Mar', revenue: 3100000 },
+    { day: '16 Mar', revenue: 3500000 },
+    { day: '17 Mar', revenue: 4200000 },
+    { day: '18 Mar', revenue: 5600000 },
   ],
   zoneRankingData: [
-    { rank: 1, name: 'Lối vào chính', status: 'Rất nóng', statusColor: 'red' },
-    { rank: 2, name: 'Quầy thanh toán', status: 'Nóng', statusColor: 'orange' },
-    { rank: 3, name: 'Khu vực giảm giá', status: 'Nóng', statusColor: 'orange' },
-    { rank: 4, name: 'Mỹ phẩm cao cấp', status: 'Ấm', statusColor: 'yellow' },
-    { rank: 5, name: 'Đồ chơi trẻ em', status: 'Trung bình', statusColor: 'blue' },
-    { rank: 6, name: 'Đồ dùng văn phòng', status: 'Ổn định', statusColor: 'cyan' },
-    { rank: 7, name: 'Nội thất lớn', status: 'Lạnh', statusColor: 'indigo' },
+    { rank: 1, name: 'Lối vào chính', traffic: 890, status: 'Rất nóng', statusColor: 'red' },
+    { rank: 2, name: 'Quầy thanh toán', traffic: 756, status: 'Nóng', statusColor: 'orange' },
+    { rank: 3, name: 'Khu vực giảm giá', traffic: 723, status: 'Nóng', statusColor: 'orange' },
+    { rank: 4, name: 'Mỹ phẩm cao cấp', traffic: 654, status: 'Ấm', statusColor: 'yellow' },
+    { rank: 5, name: 'Đồ chơi trẻ em', traffic: 521, status: 'Trung bình', statusColor: 'blue' },
+    { rank: 6, name: 'Đồ dùng văn phòng', traffic: 412, status: 'Ổn định', statusColor: 'cyan' },
+    { rank: 7, name: 'Nội thất lớn', traffic: 289, status: 'Lạnh', statusColor: 'indigo' },
   ]
 };
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
