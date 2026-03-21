@@ -30,8 +30,6 @@ export const Analytics = () => {
       </div>;
   }
     return <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-slate-900 mb-8">Phân tích theo zone</h1>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {zones.map(zone => <Card key={zone.zone_id} className="p-6">
             <div className="flex justify-between items-start mb-4">

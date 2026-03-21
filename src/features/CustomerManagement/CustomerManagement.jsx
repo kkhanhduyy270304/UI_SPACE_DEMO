@@ -74,12 +74,7 @@ export const CustomerManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Quản lý khách hàng</h1>
-          <p className="text-slate-600">Theo dõi thông tin và hành vi khách hàng</p>
-        </div>
-
+      <div className="flex items-center justify-end">
         {/* Type Toggle */}
         <div className="flex bg-slate-100 rounded-lg p-1">
           <button

@@ -358,13 +358,6 @@ export const Settings = () => {
 
   return (
     <div className="min-h-[70vh] rounded-3xl border border-slate-200 bg-slate-50 p-4 md:p-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">Trung tâm cài đặt</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Quản lý hồ sơ, bảo mật, hành vi hệ thống và cấu hình tích hợp cho không gian làm việc SpaceLens.
-        </p>
-      </div>
-
       {(error || successMessage) && (
         <div className="mb-4">
           {error && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}

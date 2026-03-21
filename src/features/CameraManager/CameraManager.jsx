@@ -188,12 +188,7 @@ export const CameraManager = () => {
     setIsPreviewOpen(true);
   };
   return <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Quan ly camera</h1>
-          <p className="text-slate-500 mt-1">Them, cap nhat va theo doi ket noi RTSP tai cac cua hang.</p>
-        </div>
-
+      <div className="flex items-center justify-end gap-4">
         <button onClick={openCreateModal} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all">
           <Plus size={16} /> Them camera
         </button>

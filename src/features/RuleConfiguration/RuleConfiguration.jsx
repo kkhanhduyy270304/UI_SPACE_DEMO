@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Trash2, SlidersHorizontal, Users, MapPin, BarChart3, Zap, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, SlidersHorizontal, Users, MapPin, BarChart3, Zap, ChevronDown, Power, Eye } from 'lucide-react';
 const retentionConditionLabels = {
   no_checkin: 'Không check-in',
   low_visit: 'Tần suất ghé thăm thấp',
@@ -22,6 +22,11 @@ const zoneActionLabels = {
   notify_manager: 'Thông báo quản lý',
   redistribute: 'Phân bổ lại luồng di chuyển'
 };
+const zoneMetricUnits = {
+  avg_duration: 'phút',
+  idle_time: 'phút',
+  peak_count: 'lượt'
+};
 const revenueMetricLabels = {
   daily_total: 'Tổng ngày',
   monthly_total: 'Tổng tháng',
@@ -42,21 +47,6 @@ const formatCurrencyShort = value => {
   }
   return new Intl.NumberFormat('vi-VN').format(value);
 };
-const rowAnim = {
-  initial: {
-    opacity: 0,
-    y: 14
-  },
-  animate: {
-    opacity: 1,
-    y: 0
-  },
-  exit: {
-    opacity: 0,
-    y: -10
-  }
-};
-
 /**
  * Rule configuration page for retention, zone, and revenue automation.
  */
@@ -65,7 +55,8 @@ export const RuleConfiguration = () => {
     id: makeId(),
     condition: 'no_checkin',
     days: 7,
-    action: 'send_sms'
+    action: 'send_sms',
+    enabled: true
   }]);
   const [zRules, setZRules] = useState([{
     id: makeId(),
@@ -73,15 +64,35 @@ export const RuleConfiguration = () => {
     metric: 'avg_duration',
     operator: '>',
     value: 45,
-    action: 'alert_pt'
+    action: 'alert_pt',
+    enabled: true
   }]);
   const [rRules, setRRules] = useState([{
     id: makeId(),
     metric: 'daily_total',
     operator: '<',
     value: 100_000_000,
-    action: 'notify_manager'
+    action: 'notify_manager',
+    enabled: true
   }]);
+  const [gForm, setGForm] = useState({
+    condition: 'low_visit',
+    days: 14,
+    action: 'alert_staff'
+  });
+  const [zForm, setZForm] = useState({
+    zone: 'Weights',
+    metric: 'peak_count',
+    operator: '>',
+    value: 80,
+    action: 'notify_manager'
+  });
+  const [rForm, setRForm] = useState({
+    metric: 'monthly_total',
+    operator: '<',
+    value: 1_000_000_000,
+    action: 'alert_finance'
+  });
   const upG = (id, key, value) => {
     setGRules(prev => prev.map(rule => rule.id === id ? {
       ...rule,
@@ -100,213 +111,386 @@ export const RuleConfiguration = () => {
       [key]: value
     } : rule));
   };
+  const addRule = type => {
+    if (type === 'g') {
+      setGRules(prev => [...prev, {
+        id: makeId(),
+        ...gForm,
+        enabled: true
+      }]);
+      return;
+    }
+    if (type === 'z') {
+      setZRules(prev => [...prev, {
+        id: makeId(),
+        ...zForm,
+        enabled: true
+      }]);
+      return;
+    }
+    setRRules(prev => [...prev, {
+      id: makeId(),
+      ...rForm,
+      enabled: true
+    }]);
+  };
+  const deleteRule = (type, id) => {
+    if (type === 'g') {
+      setGRules(prev => prev.filter(rule => rule.id !== id));
+      return;
+    }
+    if (type === 'z') {
+      setZRules(prev => prev.filter(rule => rule.id !== id));
+      return;
+    }
+    setRRules(prev => prev.filter(rule => rule.id !== id));
+  };
 
-  const selectClassName = 'h-11 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-9 text-sm text-slate-800 outline-none transition focus:ring-1 focus:ring-teal-500/40';
-  const inputClassName = 'h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:ring-1 focus:ring-teal-500/40';
-  const suffixInputClassName = 'h-11 w-full rounded-lg border border-slate-200 bg-white px-3 pr-14 text-sm text-slate-800 outline-none transition focus:ring-1 focus:ring-teal-500/40';
+  const selectClassName = 'h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-9 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-teal-400 focus:ring-0';
+  const inputClassName = 'h-10 w-full rounded-lg border border-slate-200 bg-white px-3 pr-10 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-teal-400 focus:ring-0 font-[\'DM_Mono\']';
+  const cellMutedClassName = 'text-[11px] uppercase tracking-wider font-bold text-slate-500';
+  const headingClassName = 'font-[\'DM_Sans\'] text-base font-bold text-slate-900';
 
   const totalRules = useMemo(() => gRules.length + zRules.length + rRules.length, [gRules, zRules, rRules]);
-  return <div className="min-h-screen bg-slate-50 p-6 space-y-6 pb-28">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Cấu hình quy tắc</h1>
-          <p className="text-slate-600 mt-1">Thiết lập logic tự động từ dữ liệu Edge AI và POS.</p>
-        </div>
+  return <div className="min-h-screen bg-slate-50 p-6 space-y-6 pb-32">
+      <div className="flex items-center justify-end gap-4">
         <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 bg-white shadow-sm">
           <SlidersHorizontal size={16} className="text-slate-600" />
           <span className="text-sm text-slate-700">{totalRules} quy tắc đang hoạt động</span>
         </div>
       </div>
 
-      <section className="bg-white border border-slate-200 border-l-4 border-l-indigo-500 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-sm">
-        <p className="uppercase tracking-widest text-xs font-semibold text-slate-500 mb-4">Quy tắc giữ chân</p>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-slate-900 inline-flex items-center gap-2">
-            <Users size={18} className="text-indigo-400" />
-            Quy tắc giữ chân thành viên
-          </h2>
-          <button onClick={() => setGRules(prev => [...prev, {
-          id: makeId(),
-          condition: 'low_visit',
-          days: 14,
-          action: 'alert_staff'
-        }])} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm">
-            <Plus size={16} /> Thêm quy tắc
-          </button>
+      <section className="border border-slate-200 rounded-xl bg-white p-4 shadow-sm">
+        <div className="mb-4 inline-flex items-center gap-2">
+          <Users size={18} className="text-indigo-500" />
+          <h2 className={headingClassName}>Retention</h2>
         </div>
-
-        <div className="space-y-3">
-          <AnimatePresence>
-            {gRules.map(rule => <motion.div key={rule.id} {...rowAnim} transition={{
-            duration: 0.22
-          }} className="rounded-xl border border-slate-200 p-4 bg-white animate-fade-in-up">
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="relative min-w-[240px] flex-1">
-                    <select value={rule.condition} onChange={e => upG(rule.id, 'condition', e.target.value)} className={selectClassName}>
-                    {Object.entries(retentionConditionLabels).map(([value, label]) => <option key={value} value={value}>
-                        {label}
-                      </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <div className="relative min-w-[170px] flex-1">
-                    <input type="number" min={1} value={rule.days} onChange={e => upG(rule.id, 'days', Number(e.target.value))} className={suffixInputClassName} />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-mono">ngày</span>
-                  </div>
-                  <div className="relative min-w-[220px] flex-1">
-                    <select value={rule.action} onChange={e => upG(rule.id, 'action', e.target.value)} className={selectClassName}>
-                    {Object.entries(retentionActionLabels).map(([value, label]) => <option key={value} value={value}>
-                        {label}
-                      </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <button onClick={() => setGRules(prev => prev.filter(item => item.id !== rule.id))} className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-rose-500/20 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/10" aria-label="Xóa quy tắc giữ chân">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-                <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-600 italic inline-flex items-center gap-2">
-                  <Zap size={14} className="text-teal-400" />
-                  Nếu thành viên {retentionConditionLabels[rule.condition].toLowerCase()} trong {rule.days} ngày -> {retentionActionLabels[rule.action]}
-                </div>
-              </motion.div>)}
-          </AnimatePresence>
-        </div>
-      </section>
-
-      <section className="bg-white border border-slate-200 border-l-4 border-l-teal-500 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-sm">
-        <p className="uppercase tracking-widest text-xs font-semibold text-slate-500 mb-4">Quy tắc zone</p>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-slate-900 inline-flex items-center gap-2">
-            <MapPin size={18} className="text-teal-400" />
-            Quy tắc hiệu suất zone
-          </h2>
-          <button onClick={() => setZRules(prev => [...prev, {
-          id: makeId(),
-          zone: 'Weights',
-          metric: 'peak_count',
-          operator: '>',
-          value: 80,
-          action: 'notify_manager'
-        }])} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm">
-            <Plus size={16} /> Thêm quy tắc
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          <AnimatePresence>
-            {zRules.map(rule => <motion.div key={rule.id} {...rowAnim} transition={{
-            duration: 0.22
-          }} className="rounded-xl border border-slate-200 p-4 bg-white animate-fade-in-up">
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="relative min-w-[140px] flex-1">
-                    <select value={rule.zone} onChange={e => upZ(rule.id, 'zone', e.target.value)} className={selectClassName}>
-                    {['Cardio', 'Weights', 'Yoga', 'Pool', 'Functional', 'Locker'].map(zone => <option key={zone} value={zone}>
-                        {zone}
-                      </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <div className="relative min-w-[220px] flex-1">
-                    <select value={rule.metric} onChange={e => upZ(rule.id, 'metric', e.target.value)} className={selectClassName}>
-                    {Object.entries(zoneMetricLabels).map(([value, label]) => <option key={value} value={value}>
-                        {label}
-                      </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <div className="relative w-[110px]">
-                    <select value={rule.operator} onChange={e => upZ(rule.id, 'operator', e.target.value)} className={selectClassName}>
-                    {['>', '<', '>=', '<='].map(operator => <option key={operator} value={operator}>
-                        {operator}
-                      </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <div className="relative min-w-[140px] flex-1">
-                    <input type="number" value={rule.value} onChange={e => upZ(rule.id, 'value', Number(e.target.value))} className={suffixInputClassName} />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-mono">đơn vị</span>
-                  </div>
-                  <div className="relative min-w-[220px] flex-1">
-                    <select value={rule.action} onChange={e => upZ(rule.id, 'action', e.target.value)} className={selectClassName}>
-                    {Object.entries(zoneActionLabels).map(([value, label]) => <option key={value} value={value}>
-                        {label}
-                      </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <button onClick={() => setZRules(prev => prev.filter(item => item.id !== rule.id))} className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-rose-500/20 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/10" aria-label="Xóa quy tắc zone">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-                <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-600 italic inline-flex items-center gap-2">
-                  <Zap size={14} className="text-teal-400" />
-                  Nếu zone {rule.zone} có {zoneMetricLabels[rule.metric]} {rule.operator} {rule.value} -> {zoneActionLabels[rule.action]}
-                </div>
-              </motion.div>)}
-          </AnimatePresence>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-1">
+            <div className="space-y-3">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Điều kiện</label>
+              <div className="relative">
+                <select value={gForm.condition} onChange={e => setGForm(prev => ({
+                ...prev,
+                condition: e.target.value
+              }))} className={selectClassName}>
+                  {Object.entries(retentionConditionLabels).map(([value, label]) => <option key={value} value={value}>
+                      {label}
+                    </option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Giá trị</label>
+              <div className="relative">
+                <input type="number" min={1} value={gForm.days} onChange={e => setGForm(prev => ({
+                ...prev,
+                days: Number(e.target.value)
+              }))} className={inputClassName} />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">ngày</span>
+              </div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Hành động</label>
+              <div className="relative">
+                <select value={gForm.action} onChange={e => setGForm(prev => ({
+                ...prev,
+                action: e.target.value
+              }))} className={selectClassName}>
+                  {Object.entries(retentionActionLabels).map(([value, label]) => <option key={value} value={value}>
+                      {label}
+                    </option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+              <button onClick={() => addRule('g')} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white hover:bg-indigo-500">
+                <Plus size={15} /> Thêm vào bảng
+              </button>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+                <p className="mb-1 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <Eye size={12} /> Xem trước
+                </p>
+                <p className="inline-flex items-center gap-2 text-xs text-slate-600">
+                  <Zap size={13} className="text-indigo-500" />
+                  Nếu khách {retentionConditionLabels[gForm.condition].toLowerCase()} trong {gForm.days} ngày thì {retentionActionLabels[gForm.action]}.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-xl border border-slate-200 lg:col-span-2">
+            <table className="min-w-full bg-white">
+              <thead className="border-b border-slate-200 bg-slate-50/80">
+                <tr>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-center w-24`}>Bật/Tắt</th>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-left`}>Tóm tắt quy luật</th>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-right w-16`}>Xóa</th>
+                </tr>
+              </thead>
+              <tbody>
+                <AnimatePresence initial={false}>
+                  {gRules.map((rule, index) => <motion.tr key={rule.id} initial={{
+                opacity: 0,
+                y: 8
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} exit={{
+                opacity: 0,
+                y: -8
+              }} transition={{
+                duration: 0.2
+              }} className={`border-b border-slate-100 last:border-0 hover:bg-slate-50/50 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}>
+                    <td className="px-3 py-3 text-center">
+                      <button onClick={() => upG(rule.id, 'enabled', !rule.enabled)} className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs ${rule.enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        <Power size={12} />
+                        {rule.enabled ? 'Bật' : 'Tắt'}
+                      </button>
+                    </td>
+                    <td className="px-3 py-3 text-sm text-slate-700">
+                      <span className={rule.enabled ? '' : 'opacity-50'}>Nếu khách {retentionConditionLabels[rule.condition].toLowerCase()} trong <span className="font-[\'DM_Mono\']">{rule.days}</span> ngày thì {retentionActionLabels[rule.action]}.</span>
+                    </td>
+                    <td className="px-3 py-3 text-right">
+                      <button onClick={() => deleteRule('g', rule.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-rose-400 hover:bg-rose-50 hover:text-rose-500" aria-label="Xóa quy tắc giữ chân">
+                        <Trash2 size={15} />
+                      </button>
+                    </td>
+                  </motion.tr>)}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
-      <section className="bg-white border border-slate-200 border-l-4 border-l-amber-500 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-sm">
-        <p className="uppercase tracking-widest text-xs font-semibold text-slate-500 mb-4">Quy tắc doanh thu</p>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-slate-900 inline-flex items-center gap-2">
-            <BarChart3 size={18} className="text-amber-400" />
-            Quy tắc mục tiêu doanh thu
-          </h2>
-          <button onClick={() => setRRules(prev => [...prev, {
-          id: makeId(),
-          metric: 'monthly_total',
-          operator: '<',
-          value: 1_000_000_000,
-          action: 'alert_finance'
-        }])} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-sm">
-            <Plus size={16} /> Thêm quy tắc
-          </button>
+      <section className="border border-slate-200 rounded-xl bg-white p-4 shadow-sm">
+        <div className="mb-4 inline-flex items-center gap-2">
+          <MapPin size={18} className="text-teal-500" />
+          <h2 className={headingClassName}>Zone</h2>
         </div>
-
-        <div className="space-y-3">
-          <AnimatePresence>
-            {rRules.map(rule => <motion.div key={rule.id} {...rowAnim} transition={{
-            duration: 0.22
-          }} className="rounded-xl border border-slate-200 p-4 bg-white animate-fade-in-up">
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="relative min-w-[220px] flex-1">
-                    <select value={rule.metric} onChange={e => upR(rule.id, 'metric', e.target.value)} className={selectClassName}>
-                    {Object.entries(revenueMetricLabels).map(([value, label]) => <option key={value} value={value}>
-                        {label}
-                      </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <div className="relative w-[110px]">
-                    <select value={rule.operator} onChange={e => upR(rule.id, 'operator', e.target.value)} className={selectClassName}>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-1">
+            <div className="space-y-3">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Điều kiện</label>
+              <div className="relative">
+                <select value={zForm.zone} onChange={e => setZForm(prev => ({
+                ...prev,
+                zone: e.target.value
+              }))} className={selectClassName}>
+                  {['Cardio', 'Weights', 'Yoga', 'Pool', 'Functional', 'Locker'].map(zone => <option key={zone} value={zone}>
+                      {zone}
+                    </option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+              <div className="relative">
+                <select value={zForm.metric} onChange={e => setZForm(prev => ({
+                ...prev,
+                metric: e.target.value
+              }))} className={selectClassName}>
+                  {Object.entries(zoneMetricLabels).map(([value, label]) => <option key={value} value={value}>
+                      {label}
+                    </option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Giá trị</label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <select value={zForm.operator} onChange={e => setZForm(prev => ({
+                  ...prev,
+                  operator: e.target.value
+                }))} className={selectClassName}>
                     {['>', '<', '>=', '<='].map(operator => <option key={operator} value={operator}>
                         {operator}
                       </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
-                  <div className="relative min-w-[220px] flex-1">
-                    <input type="number" min={0} value={rule.value} onChange={e => upR(rule.id, 'value', Number(e.target.value))} className={suffixInputClassName} />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-mono">VND</span>
-                  </div>
-                  <div className="relative min-w-[220px] flex-1">
-                    <select value={rule.action} onChange={e => upR(rule.id, 'action', e.target.value)} className={selectClassName}>
-                    {Object.entries(revenueActionLabels).map(([value, label]) => <option key={value} value={value}>
-                        {label}
+                  </select>
+                  <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                </div>
+                <div className="relative">
+                  <input type="number" value={zForm.value} onChange={e => setZForm(prev => ({
+                  ...prev,
+                  value: Number(e.target.value)
+                }))} className={inputClassName} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">{zoneMetricUnits[zForm.metric]}</span>
+                </div>
+              </div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Hành động</label>
+              <div className="relative">
+                <select value={zForm.action} onChange={e => setZForm(prev => ({
+                ...prev,
+                action: e.target.value
+              }))} className={selectClassName}>
+                  {Object.entries(zoneActionLabels).map(([value, label]) => <option key={value} value={value}>
+                      {label}
+                    </option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+              <button onClick={() => addRule('z')} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-3 py-2 text-sm text-white hover:bg-teal-500">
+                <Plus size={15} /> Thêm vào bảng
+              </button>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+                <p className="mb-1 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <Eye size={12} /> Xem trước
+                </p>
+                <p className="inline-flex items-center gap-2 text-xs text-slate-600">
+                  <Zap size={13} className="text-teal-500" />
+                  Nếu khu {zForm.zone} có {zoneMetricLabels[zForm.metric].toLowerCase()} {zForm.operator} {zForm.value} {zoneMetricUnits[zForm.metric]} thì {zoneActionLabels[zForm.action]}.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-xl border border-slate-200 lg:col-span-2">
+            <table className="min-w-full bg-white">
+              <thead className="border-b border-slate-200 bg-slate-50/80">
+                <tr>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-center w-24`}>Bật/Tắt</th>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-left`}>Tóm tắt quy luật</th>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-right w-16`}>Xóa</th>
+                </tr>
+              </thead>
+              <tbody>
+                <AnimatePresence initial={false}>
+                  {zRules.map((rule, index) => <motion.tr key={rule.id} initial={{
+                opacity: 0,
+                y: 8
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} exit={{
+                opacity: 0,
+                y: -8
+              }} transition={{
+                duration: 0.2
+              }} className={`border-b border-slate-100 last:border-0 hover:bg-slate-50/50 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}>
+                    <td className="px-3 py-3 text-center">
+                      <button onClick={() => upZ(rule.id, 'enabled', !rule.enabled)} className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs ${rule.enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        <Power size={12} />
+                        {rule.enabled ? 'Bật' : 'Tắt'}
+                      </button>
+                    </td>
+                    <td className="px-3 py-3 text-sm text-slate-700">
+                      <span className={rule.enabled ? '' : 'opacity-50'}>Nếu khu {rule.zone} có {zoneMetricLabels[rule.metric].toLowerCase()} {rule.operator} <span className="font-[\'DM_Mono\']">{rule.value}</span> {zoneMetricUnits[rule.metric]} thì {zoneActionLabels[rule.action]}.</span>
+                    </td>
+                    <td className="px-3 py-3 text-right">
+                      <button onClick={() => deleteRule('z', rule.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-rose-400 hover:bg-rose-50 hover:text-rose-500" aria-label="Xóa quy tắc zone">
+                        <Trash2 size={15} />
+                      </button>
+                    </td>
+                  </motion.tr>)}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="border border-slate-200 rounded-xl bg-white p-4 shadow-sm">
+        <div className="mb-4 inline-flex items-center gap-2">
+          <BarChart3 size={18} className="text-amber-500" />
+          <h2 className={headingClassName}>Revenue</h2>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:col-span-1">
+            <div className="space-y-3">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Điều kiện</label>
+              <div className="relative">
+                <select value={rForm.metric} onChange={e => setRForm(prev => ({
+                ...prev,
+                metric: e.target.value
+              }))} className={selectClassName}>
+                  {Object.entries(revenueMetricLabels).map(([value, label]) => <option key={value} value={value}>
+                      {label}
+                    </option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Giá trị</label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <select value={rForm.operator} onChange={e => setRForm(prev => ({
+                  ...prev,
+                  operator: e.target.value
+                }))} className={selectClassName}>
+                    {['>', '<', '>=', '<='].map(operator => <option key={operator} value={operator}>
+                        {operator}
                       </option>)}
-                    </select>
-                    <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  </div>
+                  </select>
+                  <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 </div>
-                <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-600 italic inline-flex items-center gap-2">
-                  <Zap size={14} className="text-teal-400" />
-                  Nếu {revenueMetricLabels[rule.metric]} {rule.operator} {formatCurrencyShort(rule.value)} -> {revenueActionLabels[rule.action]}
+                <div className="relative">
+                  <input type="number" min={0} value={rForm.value} onChange={e => setRForm(prev => ({
+                  ...prev,
+                  value: Number(e.target.value)
+                }))} className={inputClassName} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">₫</span>
                 </div>
-              </motion.div>)}
-          </AnimatePresence>
+              </div>
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Hành động</label>
+              <div className="relative">
+                <select value={rForm.action} onChange={e => setRForm(prev => ({
+                ...prev,
+                action: e.target.value
+              }))} className={selectClassName}>
+                  {Object.entries(revenueActionLabels).map(([value, label]) => <option key={value} value={value}>
+                      {label}
+                    </option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              </div>
+              <button onClick={() => addRule('r')} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-3 py-2 text-sm text-white hover:bg-amber-500">
+                <Plus size={15} /> Thêm vào bảng
+              </button>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+                <p className="mb-1 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <Eye size={12} /> Xem trước
+                </p>
+                <p className="inline-flex items-center gap-2 text-xs text-slate-600">
+                  <Zap size={13} className="text-amber-500" />
+                  Nếu {revenueMetricLabels[rForm.metric].toLowerCase()} {rForm.operator} {formatCurrencyShort(rForm.value)} thì {revenueActionLabels[rForm.action]}.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-xl border border-slate-200 lg:col-span-2">
+            <table className="min-w-full bg-white">
+              <thead className="border-b border-slate-200 bg-slate-50/80">
+                <tr>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-center w-24`}>Bật/Tắt</th>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-left`}>Tóm tắt quy luật</th>
+                  <th className={`${cellMutedClassName} px-3 py-3 text-right w-16`}>Xóa</th>
+                </tr>
+              </thead>
+              <tbody>
+                <AnimatePresence initial={false}>
+                  {rRules.map((rule, index) => <motion.tr key={rule.id} initial={{
+                opacity: 0,
+                y: 8
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} exit={{
+                opacity: 0,
+                y: -8
+              }} transition={{
+                duration: 0.2
+              }} className={`border-b border-slate-100 last:border-0 hover:bg-slate-50/50 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}>
+                    <td className="px-3 py-3 text-center">
+                      <button onClick={() => upR(rule.id, 'enabled', !rule.enabled)} className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs ${rule.enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        <Power size={12} />
+                        {rule.enabled ? 'Bật' : 'Tắt'}
+                      </button>
+                    </td>
+                    <td className="px-3 py-3 text-sm text-slate-700">
+                      <span className={rule.enabled ? '' : 'opacity-50'}>Nếu {revenueMetricLabels[rule.metric].toLowerCase()} {rule.operator} <span className="font-[\'DM_Mono\']">{formatCurrencyShort(rule.value)}</span> thì {revenueActionLabels[rule.action]}.</span>
+                    </td>
+                    <td className="px-3 py-3 text-right">
+                      <button onClick={() => deleteRule('r', rule.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-rose-400 hover:bg-rose-50 hover:text-rose-500" aria-label="Xóa quy tắc doanh thu">
+                        <Trash2 size={15} />
+                      </button>
+                    </td>
+                  </motion.tr>)}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -315,10 +499,10 @@ export const RuleConfiguration = () => {
           <p className="text-sm text-slate-600">Đã cấu hình {totalRules} quy tắc đang hoạt động</p>
           <div className="flex items-center gap-2">
             <button className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm">
-              Hủy
+              Hủy bỏ
             </button>
             <button className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm">
-              Lưu quy tắc
+              Lưu cấu hình
             </button>
           </div>
         </div>

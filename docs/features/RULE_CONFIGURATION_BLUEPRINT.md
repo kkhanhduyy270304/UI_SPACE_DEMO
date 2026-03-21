@@ -1,62 +1,32 @@
-﻿# ðŸ› ï¸ SpaceLens Blueprint: Rule Configuration System UI Refactor
+﻿# 📊 SpaceLens Blueprint: Rule Manager (Excel-Hybrid Edition)
 
 ## 1. Objective
-Refactor the UI of the Rule Configuration page (`RuleConfiguration.jsx`) to match the **Professional Light Theme** established in the Dashboard. The goal is to improve visual hierarchy and input ergonomics without altering the existing state logic (`upG`, `upZ`, `upR`).
+Refactor `RuleConfiguration.jsx` into a **Split-Screen Hybrid Layout** designed for users familiar with Excel. 
+- **Goal:** One side for structured input, one side for a clear data overview.
+- **Theme:** Professional Light (Clean white, thin borders, high legibility).
 
-## 2. Global Styling & Layout
-- **Container:** `bg-slate-50 min-h-screen p-6`.
-- **Typography:** Titles in `DM Sans` (text-slate-900), numeric units in `DM Mono` (text-slate-500).
-- **Section Headers:** Use a subtle subtle `uppercase tracking-widest text-xs font-semibold text-slate-500 mb-4`.
+## 2. Layout Structure (2-Column Grid)
+For each category (Retention, Zone, Revenue), use a `grid-cols-12` layout:
 
-## 3. UI Component Specifications (Replication Guide)
+### A. The "Entry Form" (Column Span: 4) - Left Side
+- **Concept:** A "Fixed" sidebar form to add or edit a rule.
+- **Style:** `bg-white border border-slate-200 rounded-xl p-6 sticky top-28 shadow-sm`.
+- **Elements:** - Vertical stack of labeled inputs (Condition, Threshold, Action).
+    - **Natural Language Tooltip:** A box showing the logic in a sentence: *"Nếu khách không đến 15 ngày thì Gửi Zalo"*.
+    - **Primary CTA:** A large "Add to Table" button.
 
-### A. Rule Cards (The Container)
-- **Style:** `bg-white border border-slate-200 rounded-2xl p-6 mb-6 relative overflow-hidden`.
-- **Color Coding (Left Border):** Add a 4px solid left border:
-    - **Retention:** `border-l-indigo-500`
-    - **Zones:** `border-l-teal-500`
-    - **Revenue:** `border-l-amber-500`
-- **Animations:** Apply `animate-fade-in-up` (Tailwind transition) for newly added rows.
+### B. The "Spreadsheet View" (Column Span: 8) - Right Side
+- **Concept:** A clean, multi-column table showing all active rules.
+- **Style:** `bg-white border border-slate-200 rounded-xl overflow-x-auto shadow-sm`.
+- **Table Specs:**
+    - **Header:** `bg-slate-50 text-slate-500 font-bold text-[11px] uppercase border-b`.
+    - **Rows:** `hover:bg-blue-50/30 transition-colors border-b last:border-0`.
+    - **Columns:** Status (Toggle), Rule Summary (Text), Value, Action Type, Actions (Edit/Delete).
 
-### B. Input Primitives (The Controls)
-Refactor all standard inputs into these custom Tailwind-styled components:
-1. **SI (Standard Input):** `bg-slate-50 border-slate-200 rounded-lg text-slate-700 focus:ring-1 focus:ring-teal-500/50`.
-2. **SE (Custom Select):** Use a custom arrow icon. `appearance-none bg-slate-50 border-slate-200 rounded-lg px-4 py-2 pr-8`.
-3. **NL (Numeric with Suffix):** - Wrap in a `relative` div.
-    - Suffix (e.g., "ngÃ y", "â‚«"): `absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-mono`.
-    - Input: `pr-12` padding to avoid text overlap.
+## 3. Input Primitives (Excel Style)
+- **Selects/Inputs:** Use a "Flat" design. White background, `border-slate-300`, focus with a subtle teal glow.
+- **Suffixes:** Units like "ngày", "phút", "₫" must be pinned inside the input field.
 
-### C. PrevRow (Natural Language Preview)
-- **Style:** A dedicated block at the bottom of each rule row.
-- **Visuals:** `mt-4 p-3 bg-slate-50/50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-400 italic`.
-- **Logic:** Must dynamically stringify the current row state (e.g., "If [Condition] then [Action]").
-
-### D. Sticky Footer (Global Actions)
-- **Style:** `fixed bottom-0 right-0 left-sidebar-width bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 flex justify-between items-center z-50`.
-- **Left Side:** Active rule counter (`text-slate-400 text-sm`).
-- **Right Side:** Primary "Save Configuration" button (`bg-teal-600 hover:bg-teal-500`) and secondary "Cancel".
-
----
-
-## 4. Implementation Steps (Tasks for Copilot)
-
-### Step 1: Component Refactor
-- Rewrite the `RuleRow` component for each category (Retention, Zone, Revenue).
-- Ensure the `onChange` events still call the original `upG`, `upZ`, `upR` functions. 
-- **CRITICAL:** Do not rename the state variables or modify the logic for adding/deleting IDs.
-
-### Step 2: Lucide Icon Integration
-- **Retention Section:** Use `Users`.
-- **Zone Section:** Use `MapPin`.
-- **Revenue Section:** Use `BarChart3`.
-- **Action Triggers:** Use `Zap` for notifications/alerts.
-
-### Step 3: Layout Spacing
-- Use a `flex flex-wrap items-center gap-4` for each rule row to ensure it wraps correctly on smaller screens.
-- Use a Trash icon (`lucide-react`) with `text-rose-500/50 hover:text-rose-500` for the delete action.
-
----
-
-## 5. Development Constraints
-- Use strictly **Tailwind CSS**. Remove any remaining inline `<style>` tags or manual CSS strings.
-- Currency Display: For Revenue rules, ensure any displayed values use short notation (e.g., `10,000,000 â‚«`).
+## 4. Logic Constraints
+- **State Management:** Keep all existing functions (`upG`, `upZ`, `upR`, `addRule`, `deleteRule`).
+- **Data Mapping:** The Table must map the numeric/ID values into human-readable Vietnamese labels (e.g., `send_zalo` -> `Gửi Zalo`).

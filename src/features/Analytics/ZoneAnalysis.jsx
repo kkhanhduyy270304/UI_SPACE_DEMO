@@ -58,10 +58,6 @@ export const ZoneAnalysis = () => {
     <div className="min-h-screen bg-white p-6">
       <div className="mx-auto w-full max-w-7xl space-y-6">
         <div className={cardClassName}>
-          <h1 className="mb-6 text-2xl font-bold text-slate-900">Phân tích khu vực</h1>
-        </div>
-
-        <div className={cardClassName}>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium text-slate-600">Phạm vi đang xem:</span>
             {['Tất cả khu vực', 'Lối vào chính', 'Quầy thanh toán', 'Khu vực giảm giá', 'Mỹ phẩm cao cấp'].map(zone => (
