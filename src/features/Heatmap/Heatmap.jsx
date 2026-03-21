@@ -77,6 +77,48 @@ const createFallbackSnapshot = () => {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 };
 const fallbackSnapshot = createFallbackSnapshot();
+const radiusOptions = [{
+  value: 50,
+  label: 'Nhỏ'
+}, {
+  value: 70,
+  label: 'Vừa'
+}, {
+  value: 90,
+  label: 'Rộng'
+}, {
+  value: 110,
+  label: 'Rất rộng'
+}];
+const opacityOptions = [{
+  value: 0.5,
+  label: 'Nhẹ'
+}, {
+  value: 0.65,
+  label: 'Vừa'
+}, {
+  value: 0.8,
+  label: 'Rõ'
+}, {
+  value: 0.95,
+  label: 'Nổi bật'
+}];
+const intensityOptions = [{
+  value: 0.6,
+  label: 'Êm'
+}, {
+  value: 0.8,
+  label: 'Vừa'
+}, {
+  value: 1,
+  label: 'Chuẩn'
+}, {
+  value: 1.2,
+  label: 'Mạnh'
+}, {
+  value: 1.5,
+  label: 'Rất mạnh'
+}];
 
 /**
  * Heatmap page - displays 2D density visualization
@@ -202,27 +244,39 @@ export const Heatmap = () => {
 
       <div className="flex flex-col lg:flex-row min-h-[72vh]">
         <aside className="lg:w-[320px] bg-slate-50/90 backdrop-blur-md border-r border-slate-200 p-5 space-y-5">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Chẩn đoán bản đồ nhiệt</h1>
-          <p className="text-slate-600 text-sm mt-1">Phân tích mật độ không gian theo camera.</p>
+        <div className="rounded-lg border border-slate-200 bg-white p-3">
+          <p className="text-sm font-semibold text-slate-900">Tùy chỉnh hiển thị</p>
+          <p className="mt-1 text-xs text-slate-500">Chọn mức để xem bản đồ rõ hơn. Không cần kiến thức kỹ thuật.</p>
         </div>
 
         <div className="space-y-3">
-          <label className="block text-xs uppercase tracking-wide text-slate-600">Bán kính</label>
-          <input type="range" min={24} max={120} value={radius} onChange={e => setRadius(Number(e.target.value))} className="w-full accent-teal-500" />
-          <p className="text-xs text-slate-600 font-mono">{radius}px</p>
+          <label className="block text-xs uppercase tracking-wide text-slate-600">Phạm vi hiển thị</label>
+          <div className="grid grid-cols-2 gap-2">
+            {radiusOptions.map(option => <button key={option.value} type="button" onClick={() => setRadius(option.value)} className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${radius === option.value ? 'border-teal-500 bg-teal-500 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100'}`}>
+                {option.label}
+              </button>)}
+          </div>
+          <p className="text-xs text-slate-600">Mức đang chọn: <span className="font-semibold">{radiusOptions.find(item => item.value === radius)?.label}</span></p>
         </div>
 
         <div className="space-y-3">
-          <label className="block text-xs uppercase tracking-wide text-slate-600">Độ trong suốt</label>
-          <input type="range" min={10} max={100} value={Math.round(opacity * 100)} onChange={e => setOpacity(Number(e.target.value) / 100)} className="w-full accent-teal-500" />
-          <p className="text-xs text-slate-600 font-mono">{Math.round(opacity * 100)}%</p>
+          <label className="block text-xs uppercase tracking-wide text-slate-600">Độ đậm màu nhiệt</label>
+          <div className="grid grid-cols-2 gap-2">
+            {opacityOptions.map(option => <button key={option.value} type="button" onClick={() => setOpacity(option.value)} className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${Math.abs(opacity - option.value) < 0.001 ? 'border-teal-500 bg-teal-500 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100'}`}>
+                {option.label}
+              </button>)}
+          </div>
+          <p className="text-xs text-slate-600">Mức đang chọn: <span className="font-semibold">{opacityOptions.find(item => Math.abs(item.value - opacity) < 0.001)?.label}</span></p>
         </div>
 
         <div className="space-y-3">
-          <label className="block text-xs uppercase tracking-wide text-slate-600">Cường độ</label>
-          <input type="range" min={50} max={200} value={Math.round(intensityMultiplier * 100)} onChange={e => setIntensityMultiplier(Number(e.target.value) / 100)} className="w-full accent-teal-500" />
-          <p className="text-xs text-slate-600 font-mono">x{intensityMultiplier.toFixed(2)}</p>
+          <label className="block text-xs uppercase tracking-wide text-slate-600">Mức nhạy hiển thị</label>
+          <div className="grid grid-cols-3 gap-2">
+            {intensityOptions.map(option => <button key={option.value} type="button" onClick={() => setIntensityMultiplier(option.value)} className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${Math.abs(intensityMultiplier - option.value) < 0.001 ? 'border-teal-500 bg-teal-500 text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100'}`}>
+                {option.label}
+              </button>)}
+          </div>
+          <p className="text-xs text-slate-600">Mức đang chọn: <span className="font-semibold">{intensityOptions.find(item => Math.abs(item.value - intensityMultiplier) < 0.001)?.label}</span></p>
         </div>
         </aside>
 

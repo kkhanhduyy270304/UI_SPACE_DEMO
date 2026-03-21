@@ -21,7 +21,7 @@ export const Breadcrumbs = () => {
     users: 'Người dùng',
     customers: 'Khách hàng',
     products: 'Tài sản',
-    rules: 'Rule',
+    rules: 'Cấu hình rule',
     settings: 'Cài đặt',
     dashboard: 'Tổng quan',
     login: 'Đăng nhập'
@@ -42,7 +42,7 @@ export const Breadcrumbs = () => {
       .filter(segment => segment !== '');
 
     // Build breadcrumb array
-    const breadcrumbs = [{ label: 'Home', path: '/', isHome: true }];
+    const breadcrumbs = [{ label: 'Home', path: '/', isHome: true, isLast: pathSegments.length === 0 }];
 
     let currentPath = '';
     pathSegments.forEach((segment, index) => {
@@ -62,11 +62,6 @@ export const Breadcrumbs = () => {
 
   const breadcrumbs = getSegments();
 
-  // Don't show breadcrumbs on dashboard (home page)
-  if (location.pathname === '/') {
-    return null;
-  }
-
   return (
     <nav className="flex min-w-0 items-center gap-1 whitespace-nowrap" role="navigation" aria-label="breadcrumb">
       {breadcrumbs.map((breadcrumb, index) => (
@@ -74,25 +69,25 @@ export const Breadcrumbs = () => {
           {breadcrumb.isHome ? (
             <Link
               to={breadcrumb.path}
-              className="flex items-center gap-1 text-slate-400 hover:text-slate-600 transition-colors"
+              className="flex items-center gap-1 text-slate-400 hover:text-slate-500 transition-colors"
               aria-label="Home"
             >
-              <Home size={14} className="shrink-0" />
-              <span className="text-sm">Home</span>
+              <Home size={12} className="shrink-0" />
+              <span className="text-xs">Home</span>
             </Link>
           ) : (
             <>
               {index > 0 && (
-                <ChevronRight size={14} className="text-slate-300 shrink-0" />
+                <ChevronRight size={12} className="text-slate-300 shrink-0" />
               )}
               {breadcrumb.isLast ? (
-                <span className="text-slate-900 font-bold text-sm truncate">
+                <span className="text-slate-700 font-semibold text-xs truncate">
                   {breadcrumb.label}
                 </span>
               ) : (
                 <Link
                   to={breadcrumb.path}
-                  className="text-slate-400 hover:text-slate-600 transition-colors text-sm truncate"
+                  className="text-slate-400 hover:text-slate-500 transition-colors text-xs truncate"
                 >
                   {breadcrumb.label}
                 </Link>

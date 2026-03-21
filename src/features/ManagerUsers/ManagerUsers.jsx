@@ -60,11 +60,7 @@ export const ManagerUsers = () => {
     }
   };
   return <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Quan ly nguoi dung</h1>
-          <p className="text-slate-500 mt-1">Admin co the tao tai khoan cho manager va staff theo tung cua hang.</p>
-        </div>
+      <div className="flex items-center justify-end gap-4">
         {canCreateUser && <button onClick={() => setIsModalOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-all">
             <Plus size={16} /> Them nguoi dung
           </button>}

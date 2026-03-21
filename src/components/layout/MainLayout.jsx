@@ -12,19 +12,18 @@ import { Breadcrumbs } from './Breadcrumbs';
 export const MainLayout = () => {
   const location = useLocation();
   const hideGlobalFilter = location.pathname === '/heatmap';
-  const showBreadcrumbs = location.pathname !== '/';
 
   return <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
       <div className="flex flex-col flex-1">
         <Header />
 
-        {showBreadcrumbs && <div className="border-b border-slate-200 bg-white px-6 py-3">
-            <div className="mx-auto w-full max-w-[1760px] lg:px-4 2xl:px-8">
-              <Breadcrumbs />
-            </div>
-          </div>}
+        <div className="bg-slate-50 border-b border-slate-200 px-8 py-2.5 sticky top-16 z-40">
+          <div className="mx-auto w-full max-w-[1760px]">
+            <Breadcrumbs />
+          </div>
+        </div>
 
-        {!hideGlobalFilter && <div className="sticky top-16 z-40 px-6 bg-slate-50">
+        {!hideGlobalFilter && <div className="sticky top-24 z-30 px-6 bg-slate-50">
             <div className="mx-auto w-full max-w-[1760px] lg:px-4 2xl:px-8">
               <GlobalFilter />
             </div>

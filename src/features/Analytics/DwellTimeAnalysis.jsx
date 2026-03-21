@@ -201,11 +201,6 @@ export const DwellTimeAnalysis = () => {
   return (
     <div className="min-h-screen rounded-2xl bg-white p-6">
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Phân tích thời gian dừng</h1>
-          <p className="mt-2 text-sm text-slate-600">Phân tích mức độ tương tác của khách hàng theo từng khu vực.</p>
-        </div>
-
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {kpiCards.map(card => (
             <div key={card.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
