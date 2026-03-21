@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { loadHeatmapData } from '../../redux/slices/heatmapSlice';
+import gymImage from '../../assets/thiet-ke-phong-gym-21.jpg';
 const rois = [{
   id: 'roi-cardio',
   label: 'Cardio',
@@ -227,7 +228,7 @@ export const Heatmap = () => {
 
         <section className="lg:w-3/4 p-5 flex flex-col">
         <div className="relative rounded-xl overflow-hidden shadow-sm border border-slate-200 flex-1 min-h-[420px] bg-slate-100" ref={containerRef}>
-          <img src={fallbackSnapshot} alt="Ảnh chụp cửa hàng" className="absolute inset-0 w-full h-full object-cover" onLoad={drawHeatLayer} />
+          <img src={gymImage} alt="Sơ đồ phòng gym" className="absolute inset-0 w-full h-full object-cover" />
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
