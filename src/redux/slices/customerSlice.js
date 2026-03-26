@@ -176,6 +176,22 @@ export const loadCustomerData = createAsyncThunk('customer/loadCustomerData', as
   });
 });
 
+export const deleteCustomer = createAsyncThunk('customer/deleteCustomer', async (id, { getState }) => {
+  const existing = getState().customer.data.find(item => item.id === id);
+  if (!existing) {
+    throw new Error('Customer not found');
+  }
+  return id;
+});
+
+export const updateCustomer = createAsyncThunk('customer/updateCustomer', async (customerData, { getState }) => {
+  const existing = getState().customer.data.find(item => item.id === customerData.id);
+  if (!existing) {
+    throw new Error('Customer not found');
+  }
+  return customerData;
+});
+
 const customerSlice = createSlice({
   name: 'customer',
   initialState,
@@ -218,6 +234,30 @@ const customerSlice = createSlice({
       .addCase(loadCustomerData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to load customer data';
+      })
+      .addCase(deleteCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = state.data.filter(item => item.id !== action.payload);
+      })
+      .addCase(deleteCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to delete customer';
+      })
+      .addCase(updateCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = state.data.map(item => (item.id === action.payload.id ? { ...item, ...action.payload } : item));
+      })
+      .addCase(updateCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update customer';
       });
   }
 });

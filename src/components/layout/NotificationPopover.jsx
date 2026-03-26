@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, Bell, Info, XCircle } from 'lucide-react';
+import { AlertTriangle, Bell, Info, XCircle, ChevronRight } from 'lucide-react';
 
 const initialNotifications = [
   {
@@ -166,6 +167,16 @@ export const NotificationPopover = () => {
                 })}
               </div>
             )}
+            <div className="border-t border-slate-200 p-3">
+              <Link
+                to="/notifications"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between text-sm text-teal-700 hover:text-teal-800 transition-colors"
+              >
+                <span>Xem tất cả thông báo</span>
+                <ChevronRight size={16} />
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
