@@ -56,6 +56,7 @@ export const AppRouter = () => {
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/analytics/dwell-time" element={<DwellTimeAnalysis />} />
+          <Route path="/analytics/customer" element={<CustomerAnalysis />} />
           <Route path="/analytics/zone" element={<ZoneAnalysis />} />
 
           <Route path="/management/cameras" element={<CameraManager />} />
