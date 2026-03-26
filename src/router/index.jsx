@@ -4,14 +4,16 @@ import { MainLayout } from '../components/layout';
 import { SignIn } from '../features/Auth';
 import { Dashboard } from '../features/Dashboard';
 import { Heatmap } from '../features/Heatmap';
-import { Analytics, DwellTimeAnalysis, CustomerAnalysis, ZoneAnalysis } from '../features/Analytics';
+import { Analytics, DwellTimeAnalysis, ZoneAnalysis } from '../features/Analytics';
 import { RuleConfiguration } from '../features/RuleConfiguration';
 import { ZoneManager } from '../features/ZoneManager';
 import { CustomerManagement } from '../features/CustomerManagement';
+import { CustomerWorkoutCalendar } from '../features/CustomerManagement/pages/CustomerWorkoutCalendar';
 import { AssetManagement } from '../features/AssetManagement';
 import { CameraManager } from '../features/CameraManager';
 import { ManagerUsers } from '../features/ManagerUsers';
 import { Settings } from '../features/Settings';
+import { NotificationPage } from '../features/Notifications';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { hydrateSession } from '../redux/slices/authSlice';
 import { getStoredSession } from '../services/api/authApi';
@@ -61,8 +63,11 @@ export const AppRouter = () => {
           <Route path="/management/zones" element={<ZoneManager />} />
           <Route path="/management/users" element={<ManagerUsers />} />
           <Route path="/management/customers" element={<CustomerManagement />} />
+          <Route path="/management/customer-workouts" element={<CustomerWorkoutCalendar />} />
           <Route path="/management/products" element={<AssetManagement />} />
           <Route path="/management/rules" element={<RuleConfiguration />} />
+
+          <Route path="/notifications" element={<NotificationPage />} />
 
           <Route path="/settings" element={<Settings />} />
           <Route path="/privacy" element={<div className="text-slate-900">Chính sách bảo mật</div>} />

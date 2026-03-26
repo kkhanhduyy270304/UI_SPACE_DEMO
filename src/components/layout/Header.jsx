@@ -39,10 +39,6 @@ export const Header = () => {
     path: '/analytics/dwell-time',
     icon: <BarChart3 size={18} />
   }, {
-    label: 'Phân tích khách hàng',
-    path: '/analytics/customer',
-    icon: <Users size={18} />
-  }, {
     label: 'Phân tích khu vực',
     path: '/analytics/zone',
     icon: <MapPin size={18} />
@@ -60,6 +56,10 @@ export const Header = () => {
     label: 'Quản lý khách hàng',
     path: '/management/customers',
     icon: <Users size={18} />
+  }, {
+    label: 'Lịch tập khách hàng',
+    path: '/management/customer-workouts',
+    icon: <Calendar size={18} />
   }, {
     label: 'Quản lý tài sản',
     path: '/management/products',
