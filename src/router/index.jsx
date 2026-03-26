@@ -8,7 +8,7 @@ import { Analytics, DwellTimeAnalysis, ZoneAnalysis } from '../features/Analytic
 import { RuleConfiguration } from '../features/RuleConfiguration';
 import { ZoneManager } from '../features/ZoneManager';
 import { CustomerManagement } from '../features/CustomerManagement';
-import { CustomerWorkoutCalendar } from '../features/CustomerManagement/pages/CustomerWorkoutCalendar';
+import { CustomerAttendanceTracker } from '../features/CustomerManagement/pages/CustomerAttendanceTracker';
 import { AssetManagement } from '../features/AssetManagement';
 import { CameraManager } from '../features/CameraManager';
 import { ManagerUsers } from '../features/ManagerUsers';
@@ -56,19 +56,15 @@ export const AppRouter = () => {
           <Route path="/heatmap" element={<Heatmap />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/analytics/dwell-time" element={<DwellTimeAnalysis />} />
-          <Route path="/analytics/customer" element={<CustomerAnalysis />} />
           <Route path="/analytics/zone" element={<ZoneAnalysis />} />
-
           <Route path="/management/cameras" element={<CameraManager />} />
           <Route path="/management/zones" element={<ZoneManager />} />
           <Route path="/management/users" element={<ManagerUsers />} />
           <Route path="/management/customers" element={<CustomerManagement />} />
-          <Route path="/management/customer-workouts" element={<CustomerWorkoutCalendar />} />
+          <Route path="/management/attendance" element={<CustomerAttendanceTracker />} />
           <Route path="/management/products" element={<AssetManagement />} />
           <Route path="/management/rules" element={<RuleConfiguration />} />
-
           <Route path="/notifications" element={<NotificationPage />} />
-
           <Route path="/settings" element={<Settings />} />
           <Route path="/privacy" element={<div className="text-slate-900">Chính sách bảo mật</div>} />
           <Route path="/docs" element={<div className="text-slate-900">Tài liệu hướng dẫn</div>} />
