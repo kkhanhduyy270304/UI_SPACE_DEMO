@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, Flame, BarChart3, Settings, Camera, SlidersHorizontal, Menu, X, User, LogOut, ChevronDown, Package, MapPin, Users, Search } from 'lucide-react';
+import { LayoutDashboard, Flame, BarChart3, Settings, Camera, SlidersHorizontal, Menu, X, User, LogOut, ChevronDown, Package, MapPin, Users, Search, CalendarCheck } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { signOut } from '../../redux/slices/authSlice';
 import { NotificationPopover } from './NotificationPopover';
@@ -58,8 +58,8 @@ export const Header = () => {
     icon: <Users size={18} />
   }, {
     label: 'Lịch tập khách hàng',
-    path: '/management/customer-workouts',
-    icon: <Calendar size={18} />
+    path: '/management/attendance',
+    icon: <CalendarCheck size={18} />
   }, {
     label: 'Quản lý tài sản',
     path: '/management/products',
